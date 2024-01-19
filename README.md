@@ -1,4 +1,4 @@
-# teeny.io
+# scissor.io
 
 ## Frontend (React JS):
 
