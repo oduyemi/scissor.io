@@ -1,38 +1,132 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+*{
+  margin: 0px;
+  padding: 0px;
+}
+
+body{
+  background-color: #4C243B;
+  color: #939196;
+  font-family: "monteserrat", sans-serif;
+  overflow: hidden !important;
+}
+
 .App {
-  text-align: center;
+  background-color: #4C243B;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+#root{
+  height: 100%;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
+
+.main_header nav a:hover {
+  color: #FDCFF3;
+  margin-top: -5%;
+}
+
+
+/* .logo{
+    position: absolute;
+    left:3%;
+} */
+
+.link{
+  position: relative;
+  left: 17%;
+}
+
+
+
+@media (max-width: 768px) {
+  .mobile-menu-button {
+    display: block;
+    width: 100%;
+  }
+
+  #mobile-menu {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    position: absolute;
+    color: #fff;
+    background-color: rgba(0, 0, 0, 0.09);
+    top: 40px; 
+    right: 0;
+    left: 0;
+    z-index: 999;
+  }
+
+  #mobile-menu:hover{
+    color: #C32F27;
+  }
+  
+  .nav-menu-wrapper {
+    display: none;
+  }
+
+  .nav-icon {
+    display: block;
+    margin: 2%; 
+    padding: 2%;
+  }
+
+  .logo {
+    width: 90%;
+    margin-top: -4%;
+    margin-left: -36%;
+  }
+
+  .mobile-menu-popup {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.99);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+  }
+
+  .mobile-menu-content {
+    padding: 20px;
+  }
+
+  .close-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    color: #C32F27;
+    margin-bottom: 10px;
+  }
+
+
+  .mobile-menu-link {
+    display: block;
+    padding: 10px;
+    text-decoration: none;
+    transition: background 0.3s;
+  }
+
+  .mobile-menu-link:hover{
+    color: #C32F27;
+  }
+  .mobile-menu-link:hover {
+    background: #eee;
+  }
+  .header-extras{
+    display:none;
+  }
+  .link{
+    position: relative;
+    left: 0;
   }
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
-}
-
-.App-link {
-  color: #61dafb;
-}
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
