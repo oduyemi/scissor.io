@@ -20,3 +20,16 @@ class URL(Base):
     id = Column(Integer, primary_key=True, index=True)
     original_url = Column(String(250), index=True)
     shortened_url = Column(String(10), index=True)
+    visit_count = Column(Integer, default=0)
+
+class QRCode(Base):
+    __tablename__ = "qrcodes"
+    id = Column(Integer, primary_key=True, index=True)
+    short_url = Column(String(250), index=True, unique=True, nullable=False)
+    image_path = Column(String(250), nullable=False)
+
+class Visit(Base):
+    __tablename__ = "visits"
+    id = Column(Integer, primary_key=True, index=True)
+    short_url = Column(String(10), index=True, nullable=False)
+    visit_time = Column(DateTime, default=datetime.utcnow)

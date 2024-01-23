@@ -1,15 +1,15 @@
 from datetime import timedelta, datetime
-from fastapi import APIRouter, Request, status, Depends, HTTPException, Form
+from fastapi import APIRouter, Request, status, Depends, HTTPException
 from fastapi.responses import StreamingResponse
 from sqlalchemy.orm import Session, joinedload
 from scissor_app import starter, models, schemas
 from typing import Optional, List
 from scissor_app.models import URL
 from .schemas import URLModel
+from .dependencies import get_db
 from sqlalchemy import func
 import qrcode
 from io import BytesIO
-
 
 scissor_router = APIRouter()
 
@@ -32,6 +32,9 @@ def generate_qr_code_image(data: str):
     return StreamingResponse(io=img_bytes, media_type="image/png")
 
 
+@starter.get("/")
+async def get_index():
+    return {"message": "Welcome to scissor.io"}
 
 @starter.post("/shorten-url/")
 def create_short_url(url: URLModel):
@@ -53,3 +56,31 @@ def generate_qr_code(short_url: str):
     # Return the QR code image or a link to download it
     pass
     return None
+
+
+@starter.get("/analytics/{short_url}")
+def get_analytics(short_url: str, db: Session = Depends(get_db)):
+    url = db.query(URL).filter(URL.shortened_url == short_url).first()
+    if url is None:
+        raise HTTPException(status_code=404, detail="Shortened URL not found")
+
+    visits = db.query(Visit).filter(Visit.short_url == short_url).all()
+    return {"original_url": url.original_url, "short_url": url.shortened_url, "visit_count": url.visit_count, "visits": visits}
+
+
+@starter.get("/{short_url}")
+def redirect_to_original(short_url: str, db: Session = Depends(get_db)):
+    url = db.query(URL).filter(URL.shortened_url == short_url).first()
+    if url is None:
+        raise HTTPException(status_code=404, detail="Shortened URL not found")
+
+    # Increment visit count
+    url.visit_count += 1
+
+    # Log visit
+    visit = Visit(short_url=short_url)
+    db.add(visit)
+    db.commit()
+
+    # Redirect to original URL
+    return RedirectResponse(url.original_url)
