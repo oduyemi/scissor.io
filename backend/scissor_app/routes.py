@@ -1,13 +1,35 @@
 from datetime import timedelta, datetime
 from fastapi import APIRouter, Request, status, Depends, HTTPException, Form
+from fastapi.responses import StreamingResponse
 from sqlalchemy.orm import Session, joinedload
 from scissor_app import starter, models, schemas
 from typing import Optional, List
 from scissor_app.models import URL
 from .schemas import URLModel
 from sqlalchemy import func
+import qrcode
+from io import BytesIO
+
 
 scissor_router = APIRouter()
+
+
+def generate_qr_code_image(data: str):
+    qr = qrcode.QRCode(
+        version=1,
+        error_correction=qrcode.constants.ERROR_CORRECT_L,
+        box_size=10,
+        border=4,
+    )
+    qr.add_data(data)
+    qr.make(fit=True)
+
+    img = qr.make_image(fill_color="black", back_color="white")
+    img_bytes = BytesIO()
+    img.save(img_bytes)
+    img_bytes.seek(0)
+
+    return StreamingResponse(io=img_bytes, media_type="image/png")
 
 
 
