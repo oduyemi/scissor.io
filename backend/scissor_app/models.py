@@ -13,3 +13,10 @@ mapper_registry = registry()
 mapper_registry.configure()
 
 Base = declarative_base()
+
+
+class URL(Base):
+    __tablename__ = "urls"
+    id = Column(Integer, primary_key=True, index=True)
+    original_url = Column(String(250), index=True)
+    shortened_url = Column(String(10), index=True)

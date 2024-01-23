@@ -2,17 +2,32 @@ from datetime import timedelta, datetime
 from fastapi import APIRouter, Request, status, Depends, HTTPException, Form
 from sqlalchemy.orm import Session, joinedload
 from scissor_app import starter, models, schemas
-from scissor_app.dependencies import get_db, get_current_user
-from scissor_app.authorize import decode_token, create_access_token, ACCESS_TOKEN_EXPIRE_MINUTES
-from fastapi.security import OAuth2PasswordRequestForm
 from typing import Optional, List
-# from scissor_app.models import Program, Class, Student, Admission, Role, Staff, Department
+from scissor_app.models import URL
+from .schemas import URLModel
 from sqlalchemy import func
 
 scissor_router = APIRouter()
 
 
-def hash_password(password: str) -> str:
-    salt = bcrypt.gensalt()
-    hashed_password = bcrypt.hashpw(password.encode('utf-8'), salt)
-    return hashed_password.decode('utf-8')
+
+@starter.post("/shorten-url/")
+def create_short_url(url: URLModel):
+    # Your logic to generate a short URL and store it in the database
+    # Return the shortened URL
+    pass
+    return None
+
+@starter.get("/original-url/{short_url}")
+def get_original_url(short_url: str):
+    # Your logic to retrieve the original URL from the database
+    # Return the original URL
+    pass
+    return None
+
+@starter.get("/generate-qr/{short_url}")
+def generate_qr_code(short_url: str):
+    # Your logic to generate a QR code for the given short URL
+    # Return the QR code image or a link to download it
+    pass
+    return None
