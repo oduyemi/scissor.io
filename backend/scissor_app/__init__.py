@@ -9,8 +9,9 @@ from fastapi.middleware.cors import CORSMiddleware
 starter = FastAPI(title="scissor.io", description="Generate a shorter URL today")
 
 origins = [
-    "http://localhost:3000",
-    "https://scissor.vercel.app"
+    "http://localhost:3000/",
+    "http://127.0.0.1:3000/",
+    "https://scissor.vercel.app/"
 ]
 
 starter.add_middleware(

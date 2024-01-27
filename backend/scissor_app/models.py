@@ -1,5 +1,5 @@
 from datetime import datetime
-from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Text, DateTime, CheckConstraint, Float, func
+from sqlalchemy import Column, ForeignKey, Integer, String, DateTime
 from sqlalchemy.orm import relationship, sessionmaker, registry
 from sqlalchemy.ext.declarative import declarative_base
 from scissor_app import Base, engine
@@ -20,16 +20,18 @@ class URL(Base):
     id = Column(Integer, primary_key=True, index=True)
     original_url = Column(String(250), index=True)
     shortened_url = Column(String(10), index=True)
-    visit_count = Column(Integer, default=0)
+    qr_code_path = Column(String(250), index=True)
+    visit_count = Column(Integer, default=0, index=True)
+    time = Column(DateTime, default=datetime.utcnow)
 
-class QRCode(Base):
-    __tablename__ = "qrcodes"
-    id = Column(Integer, primary_key=True, index=True)
-    short_url = Column(String(250), index=True, unique=True, nullable=False)
-    image_path = Column(String(250), nullable=False)
+    visits = relationship("Visit", back_populates="url")
+
 
 class Visit(Base):
     __tablename__ = "visits"
     id = Column(Integer, primary_key=True, index=True)
     short_url = Column(String(10), index=True, nullable=False)
+    time_shortened = Column(Integer, ForeignKey("urls.id"), nullable=False)
     visit_time = Column(DateTime, default=datetime.utcnow)
+
+    url = relationship("URL", back_populates="visits")
