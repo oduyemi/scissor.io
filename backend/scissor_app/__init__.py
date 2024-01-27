@@ -4,9 +4,22 @@ from sqlalchemy.ext.declarative import DeclarativeMeta, declarative_base
 from sqlalchemy.orm import sessionmaker
 from .database import SessionLocal
 from instance.config import SECRET_KEY, DATABASE_URI
+from fastapi.middleware.cors import CORSMiddleware
 
 starter = FastAPI(title="scissor.io", description="Generate a shorter URL today")
 
+origins = [
+    "http://localhost:3000",
+    "https://scissor.vercel.app"
+]
+
+starter.add_middleware(
+    CORSMiddleware,
+    allow_origins = origins,
+    allow_credentials = True,
+    allow_methods = ["*"],
+    allow_headers = ["*"]
+)
 
 engine = create_engine(DATABASE_URI)
 
