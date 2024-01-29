@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Box, Card, Typography, Grid, Container } from "@mui/material";
 import Button from "./elements/Button";
+import axios from "axios";
 
 
 
@@ -12,31 +13,26 @@ export const Shorten = () => {
     const handleShorten = async () => {
         try {
             setLoading(true);
-            const response = await fetch("http://localhost:8000/shorten-url/", {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({
-                url: originalUrl,
-              }),
-            });
-      
-            if (!response.ok) {
-              const errorData = await response.json();
-              throw new Error(errorData.detail);
+            const response = await axios.post("http://127.0.0.1:8000/an", { url: originalUrl });
+
+            const responseData = response.data;
+
+            if (response.status === 200) {
+                console.log('Success:', responseData);
+                setShortenedUrl(responseData.shortened_url);
+            } else {
+                console.error('Error:', responseData);
+                setShortenedUrl('');
             }
-      
-            const responseData = await response.json();
-            setShortenedUrl(responseData.shortened_url);
-          }catch (error) {
+        } catch (error) {
             console.error('Error shortening URL:', error);
             setShortenedUrl('');
             alert(`Error shortening URL: ${error.message}`);
-          } finally {
+        } finally {
             setLoading(false);
-          }
-        };
+        }
+    };
+        
 
         const handleFormSubmit = (e) => {
             e.preventDefault();
@@ -90,22 +86,9 @@ export const Shorten = () => {
                                                     <Button
                                                         className="mt-[-1%] text-white font-light py-2 px-3 rounded"
                                                         onClick= {handleShorten}
-                                                    >
-                                                        Shorten Link
+                                                        disabled={loading}>
+                                                        {loading ? "Hang on..." : "Shorten Link"}                                                
                                                     </Button>
-                                                    {loading ? (
-                                                        <p>Loading...</p>
-                                                        ) : (
-                                                            <Box>
-                                                                <Typography 
-                                                                    variant="h6" 
-                                                                    paragraph
-                                                                    className="text-white"
-                                                                >
-                                                                    Shortening URL...
-                                                                </Typography> 
-                                                            </Box>
-                                                        )}
                                                 </Box>
                                             </Box>
                                         </Box>

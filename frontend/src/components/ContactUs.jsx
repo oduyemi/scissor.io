@@ -65,7 +65,7 @@ export const ContactUs = () => {
                         Technical support
                         </p>
                         <p className="text-neutral-500 dark:text-neutral-200">
-                        support@teeny.io
+                        support@Scissor
                         </p>
                         <p className="text-neutral-500 dark:text-neutral-200">
                         +1 234-567-89
@@ -89,7 +89,7 @@ export const ContactUs = () => {
                         Sales questions
                         </p>
                         <p className="text-neutral-500 dark:text-neutral-200">
-                        sales@teeny.io
+                        sales@Scissor
                         </p>
                         <p className="text-neutral-500 dark:text-neutral-200">
                         +1 234-567-89
@@ -111,7 +111,7 @@ export const ContactUs = () => {
                     <Box className="ml-6 grow">
                         <p className="mb-2 font-bold text-[#FAF2A1]">Enquiries</p>
                         <p className="text-neutral-500 dark:text-neutral-200">
-                        info@teeny.io
+                        info@Scissor
                         </p>
                         <p className="text-neutral-500 dark:text-neutral-200">
                         +234 123 567 40899
@@ -133,7 +133,7 @@ export const ContactUs = () => {
                     <Box className="ml-6 grow">
                         <p className="mb-2 font-bold text-[#FAF2A1]">Bug report</p>
                         <p className="text-neutral-500 dark:text-neutral-200">
-                        bugs@teeny.io
+                        bugs@Scissor
                         </p>
                         <p className="text-neutral-500 dark:text-neutral-200">
                         +234 123 567 4089

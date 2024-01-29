@@ -83,12 +83,12 @@ export const Feature = () => {
                         color:"#C32F27",
                         fontWeight: "bold"
                     }}>
-                        teeny.io
+                        Scissor
                     </Typography></span> Offer?
           </Typography>
           <Box maxWidth="xl"  className="mx-auto mt-4 mb-6">
                 <Typography variant="h6" sx={{ fontSize:"16px", fontWeight:"light" }} paragraph className="w-full">
-                    teeny.io allows you to shorten URLs by pasting a long URL into the it&apos;s
+                    Scissor allows you to shorten URLs by pasting a long URL into the it&apos;s
                     platform and a shorter URL gets automatically generated. The shortened URL
                     is designed to be as short as possible, making it easy to share on social
                     media or through other channels.

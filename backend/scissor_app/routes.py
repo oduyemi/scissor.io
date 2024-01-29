@@ -32,11 +32,11 @@ def generate_qr_code_image(data: str, qr_codes_path: str = "qr_codes"):
     img = qr.make_image(fill_color="black", back_color="white")
     os.makedirs(qr_codes_path, exist_ok=True)
     
-    url_hash = hashlib.md5(link.shortened_url.encode()).hexdigest()[:10]
-    qr_code_path = os.path.join("qr_codes", f"{url_hash}.png")
-    img.save(qr_image_path)
+    url_hash = hashlib.md5(data.encode()).hexdigest()[:10]
+    qr_code_path = os.path.join(qr_codes_path, f"{url_hash}.png")
+    img.save(qr_code_path)
 
-    return qr_image_path
+    return qr_code_path
 
 
 def generate_qr_code(data: str, qr_codes_path: str = "qr_codes"):
@@ -60,6 +60,7 @@ async def get_index():
 @starter.post("/shorten-url/", response_model=schemas.ShortenRequest)
 def create_short_url(url: str, db: Session = Depends(get_db)):
     try:
+        print(f"Received URL: {url}")
         hashed = hashlib.md5(url.encode())
         url_hash = base64.urlsafe_b64encode(hashed.digest()).decode('utf-8')[:10]
         db_url = db.query(URL).filter(URL.original_url == url).first()
@@ -87,7 +88,7 @@ def create_short_url(url: str, db: Session = Depends(get_db)):
 
     except Exception as e:
         print(f"Error: {e}")
-        raise  # HTTPException(status_code=500, detail="Internal Server Error")
+        raise # HTTPException(status_code=422, detail=str(e)) 
 
 
 @starter.get("/{short_url}", response_model=schemas.ShortenResponse)
