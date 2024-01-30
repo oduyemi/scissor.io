@@ -50,10 +50,10 @@ class VisitResponse(BaseModel):
 
 
 class ContactRequest(BaseModel):
-    id: int
     name: str
     email: str
     message: str
+    sendCopy: bool
 
 class ContactResponse(BaseModel):
     name: str

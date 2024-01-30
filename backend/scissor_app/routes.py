@@ -6,9 +6,23 @@ from sqlalchemy.orm import Session
 from scissor_app import starter, models, schemas
 from typing import Optional, List
 from scissor_app.models import URL, Visit, Contact
-from .schemas import VisitResponse
+from .schemas import VisitResponse, ContactResponse, ContactRequest
 from .dependencies import get_db
 from io import BytesIO
+from dotenv import load_dotenv
+from instance.config import SECRET_KEY, DATABASE_URI
+import smtplib
+from email.mime.text import MIMEText
+
+
+load_dotenv()
+
+EMAIL_ADDRESS = os.getenv("EMAIL_ADDRESS")
+EMAIL_PASSWORD = os.getenv("EMAIL_PASSWORD")
+
+if EMAIL_ADDRESS is None or EMAIL_PASSWORD is None:
+    raise ValueError("EMAIL_ADDRESS and EMAIL_PASSWORD must be set in the environment.")
+
 
 
 scissor_router = APIRouter()
@@ -48,6 +62,19 @@ def generate_qr_code(data: str, qr_codes_path: str = "qr_codes"):
     return StreamingResponse(content=image_bytes, media_type="image/png")
 
 
+def send_email(to_email, subject, body):
+    server = smtplib.SMTP('premium194.web-hosting.com', 465)
+    server.starttls()
+    server.login(EMAIL_ADDRESS, EMAIL_PASSWORD)
+
+    msg = MIMEText(body)
+    msg['Subject'] = subject
+    msg['From'] = EMAIL_ADDRESS
+    msg['To'] = to_email
+
+    server.sendmail(EMAIL_ADDRESS, to_email, msg.as_string())
+
+    server.quit()
 
 
 #   -   R  O  U  T  E  S   -
@@ -204,8 +231,8 @@ def get_message(message_id: int, db: Session = Depends(get_db)):
         raise
 
 
-@starter.post("/message", response_model=schemas.ContactResponse)
-def send_message(message: schemas.ContactRequest, db: Session = Depends(get_db)):
+@starter.post("/send-message", response_model=ContactResponse)
+def send_message(message: ContactRequest, db: Session = Depends(get_db)):
     current_datetime_utc = datetime.utcnow()
     try:
         db_message = Contact(
@@ -219,7 +246,10 @@ def send_message(message: schemas.ContactRequest, db: Session = Depends(get_db))
         db.commit()
         db.refresh(db_message)
 
+        send_email(message.email, "Your Message Received", "Your message has been received. We will get back to you shortly.")
+
         return db_message
-    except Exception as E:
+
+    except Exception as e:
         print(f"Error: {e}")
-        raise
+        raise HTTPException(status_code=500, detail="Internal Server Error")

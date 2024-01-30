@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+// import smtplib from email.mime.text import MIMEText
 import { Box, Typography } from "@mui/material";
 import Button from "./elements/Button";
 import axios from "axios";
@@ -24,20 +25,37 @@ export const ContactUs = () => {
 
       const handleSubmit = async (e) => {
         e.preventDefault();
-    
-        try {
-          const response = await axios.post("http://your-api-url/message", formData);
-
-          console.log("Message sent successfully:", response.data);
-          
-        } catch (error) {
-            
-          console.error("Error sending message:", error);
       
+        try {
+          const response = await axios.post("http://localhost:8000/send-message", formData);
+      
+          console.log("Message sent successfully:", response.data);
+      
+          if (formData.sendCopy) {
+            await axios.post("http://localhost:8000/send-message", {
+              to: formData.email,
+              subject: "Your Message Received",
+              body: "Your message has been received. We will get back to you shortly."
+            });
+          }
+      
+          alert("Your message has been received. We will get back to you shortly.");
+      
+          setFormData({
+            name: "",
+            email: "",
+            message: "",
+            sendCopy: false,
+          });
+      
+        } catch (error) {
+          console.error("Error sending message:", error);
+          console.log("Response from server:", error.response);
         }
       };
+      
     return(
-        <Box className="container my-12 mx-auto md:px-6 text-white">
+        <Box className="container my-12 mx-auto md:px-6 ">
         <section className="mb-8">
             <Box className="flex justify-center">
             <Box className="text-center md:max-w-xl lg:max-w-3xl">

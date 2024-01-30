@@ -1,5 +1,5 @@
 from datetime import datetime
-from sqlalchemy import Column, ForeignKey, Integer, String, DateTime, Text
+from sqlalchemy import Column, ForeignKey, Integer, String, DateTime, Text, Boolean
 from sqlalchemy.orm import relationship, sessionmaker, registry
 from sqlalchemy.ext.declarative import declarative_base
 from scissor_app import Base, engine
@@ -43,5 +43,7 @@ class Contact(Base):
     email = Column(String(250), index=True, nullable=False)
     message = Column(Text, index=True, nullable=False)
     date = Column(DateTime, default=datetime.utcnow)
+
+    sendCopy = Column(Boolean, default=False)
 
     
