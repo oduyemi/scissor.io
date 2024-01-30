@@ -5,7 +5,7 @@ from fastapi.responses import StreamingResponse, RedirectResponse, FileResponse
 from sqlalchemy.orm import Session
 from scissor_app import starter, models, schemas
 from typing import Optional, List
-from scissor_app.models import URL, Visit
+from scissor_app.models import URL, Visit, Contact
 from .schemas import VisitResponse
 from .dependencies import get_db
 from io import BytesIO
@@ -94,17 +94,20 @@ def create_short_url(url: str, db: Session = Depends(get_db)):
 @starter.get("/{short_url}", response_model=schemas.ShortenResponse)
 def redirect_to_original(short_url: str, db: Session = Depends(get_db)):
     url = db.query(URL).filter(URL.shortened_url == short_url).first()
-    if url is None:
-        raise HTTPException(status_code=404, detail="Shortened URL not found")
+    try:
+        if url is None:
+            raise HTTPException(status_code=404, detail="Shortened URL not found")
 
-    url.visit_count += 1
+        url.visit_count += 1
 
-    visit = Visit(short_url=short_url, time_shortened=url.id, visit_time=datetime.utcnow())
-    db.add(visit)
-    db.commit()
+        visit = Visit(short_url=short_url, time_shortened=url.id, visit_time=datetime.utcnow())
+        db.add(visit)
+        db.commit()
 
-    return RedirectResponse(url.original_url)
-
+        return RedirectResponse(url.original_url)
+    except Exception as e:
+        print(f"Error: {e}")
+        raise
 
 
 @starter.get("/original-url/{short_url}", response_model=schemas.URLResponse)
@@ -127,79 +130,96 @@ def get_original_url(short_url: str, db: Session = Depends(get_db)):
 @starter.get("/get-qr/{short_url}", response_model=List[schemas.QRResponse])
 def get_qr_code(short_url: str, db: Session = Depends(get_db)):
     link = db.query(URL).filter(URL.shortened_url == short_url).first()
-    if not link:
-        raise HTTPException(status_code=404, detail="Link is not valid")
+    try:
+        if not link:
+            raise HTTPException(status_code=404, detail="Link is not valid")
 
-    qr_code_path = link.qr_code_path
+        qr_code_path = link.qr_code_path
 
-    return FileResponse(qr_code_path, media_type="image/png")
+        return FileResponse(qr_code_path, media_type="image/png")
+    except Exception as e:
+        print(f"Error: {e}")
+        raise
 
 
 @starter.get("/analytics/{short_url}", response_model=schemas.VisitResponse)
 def get_analytics(short_url: str, db: Session = Depends(get_db)):
     url = db.query(URL).filter(URL.shortened_url == short_url).first()
-    if url is None:
-        raise HTTPException(status_code=404, detail="Shortened URL not found")
+    try:
+        if url is None:
+            raise HTTPException(status_code=404, detail="Shortened URL not found")
 
-    visits = db.query(Visit).filter(Visit.short_url == short_url).all()
-    visit_times = [visit.visit_time for visit in visits]
+        visits = db.query(Visit).filter(Visit.short_url == short_url).all()
+        visit_times = [visit.visit_time for visit in visits]
 
-    return VisitResponse(
-        original_url=url.original_url,
-        short_url=url.shortened_url,
-        visit_times=[VisitDetail(visit_time=visit.visit_time) for visit in visits],
-        visit_count=url.visit_count,
-        visits=[VisitDetail(visit_time=visit.visit_time) for visit in visits]
-    )
+        return VisitResponse(
+            original_url=url.original_url,
+            short_url=url.shortened_url,
+            visit_times=[VisitDetail(visit_time=visit.visit_time) for visit in visits],
+            visit_count=url.visit_count,
+            visits=[VisitDetail(visit_time=visit.visit_time) for visit in visits]
+        )
+    except Exception as e:
+        print(f"Error: {e}")
+        raise
 
 
 
-@starter.get("/messages", response_model=List[schemas.ContactResponse])
+@starter.get("/contact/messages", response_model=List[schemas.ContactResponse])
 def get_messages(db: Session = Depends(get_db)):
     responses = db.query(Contact).all()
+    try:
+        if not responses:
+            raise HTTPException(status_code=404, detail="Messages not found")
 
-    if not responses:
-        return {"Message": "No messages yet"}
+        return [
+            {
+                "id": response.id,
+                "name": response.name,
+                "email": response.email,
+                "message": response.message
+            } 
+            for response in responses
+        ]
+    except Exception as e:
+        print(f"Error: {e}")
+        raise
 
-    return [
-        {
+
+@starter.get("/contact/messages/{message_id}", response_model=schemas.ContactResponse)
+def get_message(message_id: int, db: Session = Depends(get_db)):
+    response = db.query(Contact).filter(Contact.id == message_id).first()
+    try:
+        if not response:
+            raise HTTPException(status_code=404, detail="Message not found")
+
+        return {
             "id": response.id,
             "name": response.name,
             "email": response.email,
             "message": response.message
-        } 
-        for response in responses
-    ]
-
-
-@starter.get("/message/{message_id}", response_model=schemas.ContactResponse)
-def get_messages(message_id: int, db: Session = Depends(get_db)):
-    response = db.query(Contact).filter(Contact.id == message_id).first()
-
-    if not response:
-        raise HTTPException(status_code=404, detail="Message not found")
-
-    return {
-        "id": response.id,
-        "name": response.name,
-        "email": response.email,
-        "message": response.message
-    }
+        }
+    except Exception as e:
+        print(f"Error: {e}")
+        raise
 
 
 @starter.post("/message", response_model=schemas.ContactResponse)
 def send_message(message: schemas.ContactRequest, db: Session = Depends(get_db)):
     current_datetime_utc = datetime.utcnow()
+    try:
+        db_message = Contact(
+            name=message.name,
+            email=message.email,
+            message=message.message,
+            date=current_datetime_utc
+        )
 
-    db_message = Contact(
-        name=message.name,
-        email=message.email,
-        message=message.message,
-        date=current_datetime_utc
-    )
+        db.add(db_message)
+        db.commit()
+        db.refresh(db_message)
 
-    db.add(db_message)
-    db.commit()
-    db.refresh(db_message)
-
-    return db_message
+        return db_message
+    except Exception as E:
+        print(f"Error: {e}")
+        raise
