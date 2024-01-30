@@ -4,7 +4,6 @@ import Button from "./elements/Button"
 import { Link } from "react-router-dom";
 
 
-
   export const Header = () => {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -35,6 +34,16 @@ import { Link } from "react-router-dom";
                   Statistics
                 </Typography>
               </Link>
+              <Link to="/get-qr-code" className="mobile-menu-link">
+                <Typography variant="h6" sx={{fontWeight: "light" }} paragraph className="text-sm">
+                  Get QR Code
+                </Typography>
+              </Link>
+              <Link to="/get-original-url" className="mobile-menu-link">
+                <Typography variant="h6" sx={{fontWeight: "light" }} paragraph className="text-sm">
+                  Original URL
+                </Typography>
+              </Link>
               <Link
                 to="/contact"
                 className="mobile-menu-link"
@@ -56,7 +65,7 @@ import { Link } from "react-router-dom";
     <header className={`bg-transparent main_header`}>
       <nav
         id="header"
-        className={`bg-transparent }`}
+        className="bg-transparent text-white"
       >
         <Box className="mt-0 py-1 w-full flex items-center nav-icon justify-between">
           <Box className="md:hidden flex items-center" onClick={toggleMobileMenu}>
@@ -102,6 +111,24 @@ import { Link } from "react-router-dom";
                 <Typography variant="h6" paragraph sx={{fontWeight: "light", fontSize: "16px" }}
                 className="hover:bg-gray-50 border-b border-gray-100 md:hover:bg-transparent md:border-0 block pl-3 pr-4 py-2 md:p-0">
                   Statistics
+                </Typography>
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="/get-qr-code">
+                <Typography variant="h6" paragraph sx={{fontWeight: "light", fontSize: "16px" }}
+                className="hover:bg-gray-50 border-b border-gray-100 md:hover:bg-transparent md:border-0 block pl-3 pr-4 py-2 md:p-0">
+                  Get QR Code
+                </Typography>
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="/get-original-url">
+                <Typography variant="h6" paragraph sx={{fontWeight: "light", fontSize: "16px" }}
+                className="hover:bg-gray-50 border-b border-gray-100 md:hover:bg-transparent md:border-0 block pl-3 pr-4 py-2 md:p-0">
+                  Original URL
                 </Typography>
               </Link>
             </li>

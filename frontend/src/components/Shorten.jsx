@@ -42,7 +42,7 @@ export const Shorten = () => {
           
     return(
         <Box className="container my-14 mx-auto md:px-6">
-            <Container maxWidth="md" className="mt-14">
+            <Container maxWidth="md" className="mt-14 text-white">
                 <Typography
                     variant="h2"
                     className="inline link mt-8"
@@ -55,9 +55,8 @@ export const Shorten = () => {
                         Shorten Your <span>
                             <Typography
                             variant="h2"
-                            className="inline"
+                            className="inline text-pry"
                             sx={{
-                                color:"#C32F27",
                                 fontWeight: "bold"
                             }}>
                                 Link
@@ -75,7 +74,7 @@ export const Shorten = () => {
                                     <form className="my-4 w-full" onSubmit={handleFormSubmit}>
                                         <Box sx={{ display:"flex", justifyContent: "center", alignItems:"center" }}>
                                             <Box className="flex items-center gap-2 mx-auto">
-                                                <input className=" shadow appearance-none border bg-[#FAF2A1] rounded py-2 px-14 mx-auto
+                                                <input className=" shadow appearance-none border rounded py-2 px-14 mx-auto
                                                 text-gray-300 leading-tight focus:outline-none focus:shadow-outline"
                                                 type="text"
                                                 name="phone"

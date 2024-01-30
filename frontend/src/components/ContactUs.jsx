@@ -6,12 +6,15 @@ import Button from "./elements/Button"
 
 export const ContactUs = () => {
     return(
-        <Box className="container my-12 mx-auto md:px-6">
+        <Box className="container my-12 mx-auto md:px-6 text-white">
         <section className="mb-8">
             <Box className="flex justify-center">
             <Box className="text-center md:max-w-xl lg:max-w-3xl">
-                <Typography variant="h2" sx={{ color: "#C32F27", fontWeight: "bold"}}
-                className="mb-12 px-6 text-3xl font-bold">Contact us</Typography>
+                <Typography
+                variant="h2"
+                className="mb-12 px-6 text-3xl text-pry"
+                sx={{fontSize: "bold" }}>
+                    Contact us</Typography>
             </Box>
             </Box>
 
@@ -20,18 +23,18 @@ export const ContactUs = () => {
                 <form>
                 <Box className="relative mb-6" data-te-input-wrapper-init>
                     <input type="text"
-                    className="peer block min-h-[auto] w-full rounded border-0 bg-[#FAF2A1] py-[0.32rem] px-3 leading-[1.6] outline-none transition-all duration-200 ease-linear focus:placeholder:opacity-100 data-[te-input-state-active]:placeholder:opacity-100 motion-reduce:transition-none"
+                    className="peer block min-h-[auto] w-full rounded border-0 py-[0.32rem] px-3 leading-[1.6] outline-none transition-all duration-200 ease-linear focus:placeholder:opacity-100 data-[te-input-state-active]:placeholder:opacity-100 motion-reduce:transition-none"
                     name="name" placeholder="Name" />
                 </Box>
                 <Box className="relative mb-6" data-te-input-wrapper-init>
                     <input type="email"
-                    className="peer block min-h-[auto] w-full rounded border-0 bg-[#FAF2A1] py-[0.32rem] px-3 leading-[1.6] outline-none transition-all duration-200 ease-linear focus:placeholder:opacity-100 data-[te-input-state-active]:placeholder:opacity-100 motion-reduce:transition-none"
+                    className="peer block min-h-[auto] w-full rounded border-0 py-[0.32rem] px-3 leading-[1.6] outline-none transition-all duration-200 ease-linear focus:placeholder:opacity-100 data-[te-input-state-active]:placeholder:opacity-100 motion-reduce:transition-none"
                     name="mail" placeholder="Email address" />
                     
                 </Box>
                 <Box className="relative mb-6" data-te-input-wrapper-init>
                     <textarea
-                    className="peer block min-h-[auto] w-full rounded border-0 bg-[#FAF2A1] py-[0.32rem] px-3 leading-[1.6] outline-none transition-all duration-200 ease-linear focus:placeholder:opacity-100 data-[te-input-state-active]:placeholder:opacity-100 motion-reduce:transition-none"
+                    className="peer block min-h-[auto] w-full rounded border-0 py-[0.32rem] px-3 leading-[1.6] outline-none transition-all duration-200 ease-linear focus:placeholder:opacity-100 data-[te-input-state-active]:placeholder:opacity-100 motion-reduce:transition-none"
                     name="msg" rows="3" placeholder="Your message"></textarea>
                 </Box>
                 <Box className="mb-6 inline-block min-h-[1.5rem] justify-center pl-[1.5rem] md:flex">
@@ -61,11 +64,11 @@ export const ContactUs = () => {
                         </Box>
                     </Box>
                     <Box className="ml-6 grow">
-                        <p className="mb-2 font-bold text-[#FAF2A1]">
+                        <p className="mb-2 font-bold text-pee">
                         Technical support
                         </p>
                         <p className="text-neutral-500 dark:text-neutral-200">
-                        support@Scissor
+                        support@scissor.io
                         </p>
                         <p className="text-neutral-500 dark:text-neutral-200">
                         +1 234-567-89
@@ -85,11 +88,11 @@ export const ContactUs = () => {
                         </Box>
                     </Box>
                     <Box className="ml-6 grow">
-                        <p className="mb-2 font-bold text-[#FAF2A1]">
+                        <p className="mb-2 font-bold text-pee">
                         Sales questions
                         </p>
                         <p className="text-neutral-500 dark:text-neutral-200">
-                        sales@Scissor
+                        sales@scissor.io
                         </p>
                         <p className="text-neutral-500 dark:text-neutral-200">
                         +1 234-567-89
@@ -109,9 +112,9 @@ export const ContactUs = () => {
                         </Box>
                     </Box>
                     <Box className="ml-6 grow">
-                        <p className="mb-2 font-bold text-[#FAF2A1]">Enquiries</p>
+                        <p className="mb-2 font-bold text-pee">Enquiries</p>
                         <p className="text-neutral-500 dark:text-neutral-200">
-                        info@Scissor
+                        info@scissor.io
                         </p>
                         <p className="text-neutral-500 dark:text-neutral-200">
                         +234 123 567 40899
@@ -131,9 +134,9 @@ export const ContactUs = () => {
                         </Box>
                     </Box>
                     <Box className="ml-6 grow">
-                        <p className="mb-2 font-bold text-[#FAF2A1]">Bug report</p>
+                        <p className="mb-2 font-bold text-pee">Bug report</p>
                         <p className="text-neutral-500 dark:text-neutral-200">
-                        bugs@Scissor
+                        bugs@scissor.io
                         </p>
                         <p className="text-neutral-500 dark:text-neutral-200">
                         +234 123 567 4089

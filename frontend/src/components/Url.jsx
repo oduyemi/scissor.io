@@ -4,28 +4,29 @@ import Button from "./elements/Button";
 import { Link } from "react-router-dom";
 import axios from "axios";
 
-export const Stats = () => {
-    const [analytics, setAnalytics] = useState({});
+export const Url = () => {
+    const [url, setUrl] = useState({});
     const [loading, setLoading] = useState(false);
     const [shortUrl, setShortUrl] = useState("");
 
-    const handleTracker = async () => {
+    const handleUrl = async () => {
         try {
             setLoading(true);
-            const response = await axios.get(`http://127.0.0.1:8000/analytics/${shortUrl}`);
+            const response = await axios.get(`http://127.0.0.1:8000/original-url/${shortUrl}`);
             const responseData = response.data;
 
             if (response.status === 200) {
                 console.log("Success:", responseData);
-                setAnalytics(responseData);
+                setUrl(response.data);
+
             } else {
                 console.error("Error:", responseData);
-                setAnalytics({});
+                setUrl({});
             }
         } catch (error) {
-            console.error("Error tracking URL:", error);
-            setAnalytics({});
-            alert(`Error tracking URL: ${error.message}`);
+            console.error("Error fetching initial URL:", error);
+            setUrl({});
+            alert(`Error fetching initial URL: ${error.message}`);
         } finally {
             setLoading(false);
         }
@@ -33,12 +34,15 @@ export const Stats = () => {
 
     const handleFormSubmit = async (e) => {
         e.preventDefault();
-        await handleTracker();
+        await handleUrl();
     };
 
 
     return (
-        <Box className="container my-14 mx-auto md:px-6">
+        <Box>
+        <Box maxWidth="xl" sx={{ display:"flex", alignItems:"center", justifyContent:"center" }} className="text-white">
+           <Grid maxWidth="md">
+           <Box className="container mt-8 mx-auto md:px-6">
             <Container maxWidth="md" className="mt-14 text-white">
                 <Typography
                     variant="h2"
@@ -50,7 +54,7 @@ export const Stats = () => {
                         marginBottom: 3,
                     }}
                 >
-                    Track Your URLs{" "}
+                    Get URL For {" "}
                     <span>
                         <Typography
                             variant="h2"
@@ -59,10 +63,10 @@ export const Stats = () => {
                                 fontWeight: "bold",
                             }}
                         >
-                            Short
+                            Shortened 
                         </Typography>
                     </span>{" "}
-                    Here
+                    Link
                 </Typography>
                 <Box maxWidth="xl" className="mx-auto mt-4 mb-6 w-full">
                     <Grid maxWidth="xl">
@@ -73,7 +77,7 @@ export const Stats = () => {
                                 paragraph
                                 className="w-full text-center pb-2"
                             >
-                                Enter the URL to find out how many clicks it has received so far.
+                                Enter the your Scissor shortened link to fetch the initial url you shortened.
                                 <span><Typography variant="h6" className="text-goldie">Example: pjzjsl</Typography></span>
                             </Typography>
                         </Grid>
@@ -91,71 +95,59 @@ export const Stats = () => {
                                                 onChange={(e) => setShortUrl(e.target.value)}
                                                 placeholder="Enter Your teeny link here"
                                             />
-                                            <Box className="flex justify-center">
                                                 <Button
-                                                    className="mt-[-1%] text-white font-light py-2 px-3 rounded"
+                                                    className="mt-[1px] text-white font-light py-2 px-3 rounded"
                                                     type="submit"
                                                     disabled={loading}>
-                                                    {loading ? "Hang on..." : "View Clicks"}  
+                                                    {loading ? "Hang on..." : "Get Initial URL"}  
                                                 </Button>
-                                            </Box>
                                         </Box>
                                     </Box>
                                 </form>
-                                {Object.keys(analytics).length > 0 && (
-                                    <Box maxWidth="xl" className="mt-6">
-                                        <Card sx={{ backgroundColor:"transparent" }}>
-                                            <Container maxWidth="md" className="mt-12">
-                                                <Typography
-                                                    variant="h5"
-                                                    sx={{ fontWeight: 'bold' }}
-                                                    paragraph
-                                                    className="w-full text-pee text-center pb-2 inline"
-                                                >
-                                                    Original URL: &emsp;
-                                                    <span>
-                                                        <Typography variant="h6" sx={{ fontWeight: 'light'}} paragraph className="inline text-white"> 
-                                                            {analytics.original_url} 
-                                                        </Typography>
-                                                    </span><br /> <br />
-                                                    Shortened URL: &emsp;
-                                                    <span>
-                                                        <Typography variant="h6" sx={{ fontWeight: 'light'}} paragraph className="inline text-white">
-                                                            {analytics.short_url}
-                                                        </Typography>
-                                                    </span><br /><br />
-                                                    Visit Count: &emsp;
-                                                    <span>
-                                                        <Typography variant="h6" sx={{ fontWeight: 'light'}} paragraph className="inline text-white">
-                                                            {analytics.visit_count}
-                                                        </Typography>
-                                                    </span><br /><br />
-                                                    Visits: &emsp;
-                                                    <span>
-                                                        <Typography variant="h6" sx={{ fontWeight: 'light'}} paragraph className="inline text-white"> 
-                                                            {analytics.visits.length > 0 ? analytics.visits.map((visit) => visit.visit_time).join(", ") : "No visits yet"}
-                                                        </Typography>
-                                                    </span><br /><br />
-                                                </Typography>
-                                            </Container>
-                                        </Card>
+                                {url.original_url && (
+                                <Grid>
+                                    <Box maxWidth="xl" className="border border-1 border-transparent bg-transparent w-full">
+                                        <div className="ml-14 mb-2">
+                                            <Card sx={{ backgroundColor:"transparent" }}>
+                                                <Container maxWidth="md" className="mt-12">
+                                                    <Typography
+                                                        variant="h5"
+                                                        sx={{ fontWeight: 'bold' }}
+                                                        className="w-full text-pee text-center pb-2 inline"
+                                                    >
+                                                        Original URL: &emsp;
+                                                        <span>
+                                                            <Typography variant="h6" sx={{ fontWeight: 'light'}} paragraph className="inline text-white"> 
+                                                                {url.original_url} 
+                                                            </Typography>
+                                                        </span><br /> <br />
+                                                    </Typography>
+                                                </Container>
+                                            </Card>
+                                            
+                                        </div>
                                     </Box>
+                                </Grid>
                                 )}
                             </Card>
                         </Grid>
                     </Grid>
                 </Box>
-                <Box maxWidth="xl">
+            </Container>
+        </Box>
+    </Grid>
+        <Box maxWidth="xl">
                     <Link to="/shorten-link">
                         <Typography 
                         variant="h6" 
                         sx={{ color: "#FAF2A1", fontWeight: "light", fontSize: "14px", textAlign: "center" }}
+                        className="another-link"
                         >
                             Shorten Another Link
                         </Typography>
                     </Link>
-                </Box>
-            </Container>
+                </Box> 
+            </Box>
         </Box>
     );
 };

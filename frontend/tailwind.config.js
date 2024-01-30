@@ -9,7 +9,7 @@ module.exports = {
         sans:["Monteserrat", "sans-serif"]
       },
       colors:{
-        goldie: "#E50914",
+        goldie: "#FAF2A1",
         pry: "#ffbe0b",
         pee: "#FDCFF3",
       }

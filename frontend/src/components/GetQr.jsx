@@ -1,31 +1,41 @@
 import React, { useState } from "react";
 import { Box, Card, Typography, Grid, Container } from "@mui/material";
+import Icon from '@mdi/react';
+import { mdiTrayArrowDown } from '@mdi/js';
 import Button from "./elements/Button";
 import { Link } from "react-router-dom";
 import axios from "axios";
 
-export const Stats = () => {
-    const [analytics, setAnalytics] = useState({});
+export const GetQr = () => {
+    const [qr, setQr] = useState({});
     const [loading, setLoading] = useState(false);
     const [shortUrl, setShortUrl] = useState("");
 
-    const handleTracker = async () => {
+    const handleQr = async () => {
         try {
             setLoading(true);
-            const response = await axios.get(`http://127.0.0.1:8000/analytics/${shortUrl}`);
+            const response = await axios.get(`http://127.0.0.1:8000/get-qr/${shortUrl}`, {
+                responseType: 'arraybuffer',
+            });
+
             const responseData = response.data;
 
             if (response.status === 200) {
                 console.log("Success:", responseData);
-                setAnalytics(responseData);
+
+                const blob = new Blob([responseData], { type: 'image/png' });
+
+                const imageUrl = URL.createObjectURL(blob);
+
+                setQr({ imageUrl });
             } else {
                 console.error("Error:", responseData);
-                setAnalytics({});
+                setQr({});
             }
         } catch (error) {
-            console.error("Error tracking URL:", error);
-            setAnalytics({});
-            alert(`Error tracking URL: ${error.message}`);
+            console.error("Error fetching Qr Code:", error);
+            setQr({});
+            alert(`Error fetching Qr Code: ${error.message}`);
         } finally {
             setLoading(false);
         }
@@ -33,12 +43,15 @@ export const Stats = () => {
 
     const handleFormSubmit = async (e) => {
         e.preventDefault();
-        await handleTracker();
+        await handleQr();
     };
 
 
     return (
-        <Box className="container my-14 mx-auto md:px-6">
+        <Box>
+        <Box maxWidth="xl" sx={{ display:"flex", alignItems:"center", justifyContent:"center" }} className="text-white">
+           <Grid maxWidth="md">
+           <Box className="container mt-8 mx-auto md:px-6">
             <Container maxWidth="md" className="mt-14 text-white">
                 <Typography
                     variant="h2"
@@ -50,7 +63,7 @@ export const Stats = () => {
                         marginBottom: 3,
                     }}
                 >
-                    Track Your URLs{" "}
+                    Get QR For {" "}
                     <span>
                         <Typography
                             variant="h2"
@@ -59,10 +72,10 @@ export const Stats = () => {
                                 fontWeight: "bold",
                             }}
                         >
-                            Short
+                            Shortened 
                         </Typography>
                     </span>{" "}
-                    Here
+                    Link
                 </Typography>
                 <Box maxWidth="xl" className="mx-auto mt-4 mb-6 w-full">
                     <Grid maxWidth="xl">
@@ -73,8 +86,8 @@ export const Stats = () => {
                                 paragraph
                                 className="w-full text-center pb-2"
                             >
-                                Enter the URL to find out how many clicks it has received so far.
-                                <span><Typography variant="h6" className="text-goldie">Example: pjzjsl</Typography></span>
+                                Enter the your Scissor shortened link to fetch the QR code assigned to it.
+                                <span><Typography variant="h6" className="text-goldie">Example: rb.gy/pjzjsl</Typography></span>
                             </Typography>
                         </Grid>
                         <Grid maxWidth="xl" className="mx-auto w-full">
@@ -91,71 +104,59 @@ export const Stats = () => {
                                                 onChange={(e) => setShortUrl(e.target.value)}
                                                 placeholder="Enter Your teeny link here"
                                             />
-                                            <Box className="flex justify-center">
                                                 <Button
-                                                    className="mt-[-1%] text-white font-light py-2 px-3 rounded"
+                                                    className="mt-[1px] text-white font-light py-2 px-3 rounded"
                                                     type="submit"
                                                     disabled={loading}>
-                                                    {loading ? "Hang on..." : "View Clicks"}  
+                                                    {loading ? "Hang on..." : "Get QR Code"}  
                                                 </Button>
-                                            </Box>
                                         </Box>
                                     </Box>
                                 </form>
-                                {Object.keys(analytics).length > 0 && (
-                                    <Box maxWidth="xl" className="mt-6">
-                                        <Card sx={{ backgroundColor:"transparent" }}>
-                                            <Container maxWidth="md" className="mt-12">
-                                                <Typography
-                                                    variant="h5"
-                                                    sx={{ fontWeight: 'bold' }}
-                                                    paragraph
-                                                    className="w-full text-pee text-center pb-2 inline"
-                                                >
-                                                    Original URL: &emsp;
-                                                    <span>
-                                                        <Typography variant="h6" sx={{ fontWeight: 'light'}} paragraph className="inline text-white"> 
-                                                            {analytics.original_url} 
-                                                        </Typography>
-                                                    </span><br /> <br />
-                                                    Shortened URL: &emsp;
-                                                    <span>
-                                                        <Typography variant="h6" sx={{ fontWeight: 'light'}} paragraph className="inline text-white">
-                                                            {analytics.short_url}
-                                                        </Typography>
-                                                    </span><br /><br />
-                                                    Visit Count: &emsp;
-                                                    <span>
-                                                        <Typography variant="h6" sx={{ fontWeight: 'light'}} paragraph className="inline text-white">
-                                                            {analytics.visit_count}
-                                                        </Typography>
-                                                    </span><br /><br />
-                                                    Visits: &emsp;
-                                                    <span>
-                                                        <Typography variant="h6" sx={{ fontWeight: 'light'}} paragraph className="inline text-white"> 
-                                                            {analytics.visits.length > 0 ? analytics.visits.map((visit) => visit.visit_time).join(", ") : "No visits yet"}
-                                                        </Typography>
-                                                    </span><br /><br />
-                                                </Typography>
-                                            </Container>
-                                        </Card>
+                                {qr.imageUrl && (
+                                <Grid>
+                                    <Box maxWidth="sm" className="border border-1 border-transparent bg-transparent w-full">
+                                        <div className="ml-14 mb-2">
+                                            <Card 
+                                            className="shadow appearance-none"
+                                            sx={{ backgroundColor: "transparent"}}>
+                                                <img
+                                                    src={qr.imageUrl}
+                                                    alt="QR Code Preview"
+                                                    width={200}
+                                                    height={200}
+                                                    className="h-100 w-100 object-contain mx-auto"
+                                                />
+                                            </Card>
+                                            <Box className="text-center">
+                                                <Button variant="contained" className="font-light py-2 px-4  text-white rounded inline btnUp">
+                                                    <span><Icon path={mdiTrayArrowDown} size={1} className="icons inline" /></span>
+                                                            &nbsp;Download
+                                                </Button>
+                                            </Box>
+                                        </div>
                                     </Box>
+                                </Grid>
                                 )}
                             </Card>
                         </Grid>
                     </Grid>
                 </Box>
-                <Box maxWidth="xl">
+            </Container>
+        </Box>
+    </Grid>
+        <Box maxWidth="xl">
                     <Link to="/shorten-link">
                         <Typography 
                         variant="h6" 
                         sx={{ color: "#FAF2A1", fontWeight: "light", fontSize: "14px", textAlign: "center" }}
+                        className="another-link"
                         >
                             Shorten Another Link
                         </Typography>
                     </Link>
-                </Box>
-            </Container>
+                </Box> 
+            </Box>
         </Box>
     );
 };

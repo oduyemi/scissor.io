@@ -12,7 +12,7 @@ const sizes = {
 };
 
 const variants = {
-    colour: "bg-colour focus:ring-wht",
+    colour: "bg-color focus:ring-wht",
     outline: "bg-transparent text-white border border-2 focus:ring-dk",
     whi: "bg-whi focus:ring-yel",
 };

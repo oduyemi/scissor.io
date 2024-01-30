@@ -154,3 +154,52 @@ def get_analytics(short_url: str, db: Session = Depends(get_db)):
 
 
 
+@starter.get("/messages", response_model=List[schemas.ContactResponse])
+def get_messages(db: Session = Depends(get_db)):
+    responses = db.query(Contact).all()
+
+    if not responses:
+        return {"Message": "No messages yet"}
+
+    return [
+        {
+            "id": response.id,
+            "name": response.name,
+            "email": response.email,
+            "message": response.message
+        } 
+        for response in responses
+    ]
+
+
+@starter.get("/message/{message_id}", response_model=schemas.ContactResponse)
+def get_messages(message_id: int, db: Session = Depends(get_db)):
+    response = db.query(Contact).filter(Contact.id == message_id).first()
+
+    if not response:
+        raise HTTPException(status_code=404, detail="Message not found")
+
+    return {
+        "id": response.id,
+        "name": response.name,
+        "email": response.email,
+        "message": response.message
+    }
+
+
+@starter.post("/message", response_model=schemas.ContactResponse)
+def send_message(message: schemas.ContactRequest, db: Session = Depends(get_db)):
+    current_datetime_utc = datetime.utcnow()
+
+    db_message = Contact(
+        name=message.name,
+        email=message.email,
+        message=message.message,
+        date=current_datetime_utc
+    )
+
+    db.add(db_message)
+    db.commit()
+    db.refresh(db_message)
+
+    return db_message

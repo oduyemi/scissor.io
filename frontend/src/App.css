@@ -41,6 +41,15 @@ body{
 }
 
 
+.another-link{
+  position: absolute;
+  bottom: 0;
+  left: 44%;
+}
+
+
+
+
 
 @media (max-width: 768px) {
   .mobile-menu-button {

@@ -17,7 +17,7 @@ const FeatureBox = ({ Icon, title, description }) => {
       height:200,
       margin: "10px",
       padding: "16px",
-      backgroundColor: "#FAF2A1",
+      backgroundColor: "#FDCFF3",
       color: "#000",
       cursor: "pointer",
       boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
@@ -59,7 +59,7 @@ const FeatureBox = ({ Icon, title, description }) => {
     );
   };
   
-  export default FeatureBox;
+export default FeatureBox;
 
 export const Feature = () => {
     return(
@@ -68,7 +68,7 @@ export const Feature = () => {
         <Container maxWidth="md">
           <Typography
             variant="h2"
-            className="inline pl-8"
+            className="inline pl-8 text-white"
             align="center"
             sx={{
               fontWeight: "bold",
@@ -78,16 +78,15 @@ export const Feature = () => {
                 What Does <span>
                     <Typography
                     variant="h2"
-                    className="inline"
+                    className="inline text-pee"
                     sx={{
-                        color:"#C32F27",
                         fontWeight: "bold"
                     }}>
                         Scissor
                     </Typography></span> Offer?
           </Typography>
-          <Box maxWidth="xl"  className="mx-auto mt-4 mb-6">
-                <Typography variant="h6" sx={{ fontSize:"16px", fontWeight:"light" }} paragraph className="w-full">
+          <Box maxWidth="xl"  className="mx-auto mt-4 mb-10">
+                <Typography variant="h6" sx={{ fontSize:"16px", fontWeight:"light" }} paragraph className="w-full text-white">
                     Scissor allows you to shorten URLs by pasting a long URL into the it&apos;s
                     platform and a shorter URL gets automatically generated. The shortened URL
                     is designed to be as short as possible, making it easy to share on social
@@ -136,9 +135,9 @@ export const Feature = () => {
                 />
             </Box>
             </Container>
-                <Box maxWidth="xl" className="pl-6 text-center">
+                <Box maxWidth="xl" className="pl-6 text-center mt-10">
                     <Link to="/shorten-link">
-                        <Button className="mt-4">Shorten Your Link</Button>
+                        <Button className="mt-4 text-white">Shorten Your Link</Button>
                     </Link>
                 </Box>
             </div>

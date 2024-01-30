@@ -1,5 +1,5 @@
 from datetime import datetime
-from sqlalchemy import Column, ForeignKey, Integer, String, DateTime
+from sqlalchemy import Column, ForeignKey, Integer, String, DateTime, Text
 from sqlalchemy.orm import relationship, sessionmaker, registry
 from sqlalchemy.ext.declarative import declarative_base
 from scissor_app import Base, engine
@@ -35,3 +35,13 @@ class Visit(Base):
     visit_time = Column(DateTime, default=datetime.utcnow)
 
     url = relationship("URL", back_populates="visits")
+
+class Contact(Base):
+    __tablename__ = "contact"
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String(250), index=True, nullable=False)
+    email = Column(String(250), index=True, nullable=False)
+    message = Column(Text, index=True, nullable=False)
+    date = Column(DateTime, default=datetime.utcnow)
+
+    

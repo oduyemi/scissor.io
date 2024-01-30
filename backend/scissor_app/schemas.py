@@ -46,3 +46,16 @@ class VisitResponse(BaseModel):
     visit_times: List[VisitDetail]
     visit_count: int
     visits: List[VisitDetail]
+
+
+
+class ContactRequest(BaseModel):
+    id: int
+    name: str
+    email: str
+    message: str
+
+class ContactResponse(BaseModel):
+    name: str
+    email: str
+    message: str
