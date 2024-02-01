@@ -1,4 +1,4 @@
-# scissor.io
+# Scissor
 
 ## Frontend (React JS):
 
