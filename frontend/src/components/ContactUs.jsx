@@ -8,6 +8,7 @@ import axios from "axios";
 
 
 export const ContactUs = () => {
+    const [error, setError] = useState(null);
     const [formData, setFormData] = useState({
         name: "",
         email: "",
@@ -31,29 +32,23 @@ export const ContactUs = () => {
       
           console.log("Message sent successfully:", response.data);
       
-          if (formData.sendCopy) {
-            await axios.post("http://localhost:8000/send-message", {
-              to: formData.email,
-              subject: "Your Message Received",
-              body: "Your message has been received. We will get back to you shortly."
-            });
-          }
+          await axios.post("http://localhost:8000/send-message", {
+            to: formData.email,
+            subject: "Your Message Received",
+            body: "Your message has been received. We will get back to you shortly."
+          }); setError(null);
+          
       
           alert("Your message has been received. We will get back to you shortly.");
       
-          setFormData({
-            name: "",
-            email: "",
-            message: "",
-            sendCopy: false,
-          });
+          window.location.reload();
       
         } catch (error) {
           console.error("Error sending message:", error);
-          console.log("Response from server:", error.response);
+          setError(`Error: ${error.message}`);
         }
       };
-      
+    
     return(
         <Box className="container my-12 mx-auto md:px-6 ">
         <section className="mb-8">
@@ -70,6 +65,13 @@ export const ContactUs = () => {
             <Box className="flex flex-wrap">
             <Box className="mb-12 w-full shrink-0 grow-0 basis-auto md:px-3 lg:mb-0 lg:w-5/12 lg:px-6">
                 <form onSubmit={handleSubmit}>
+                    {error && (
+                        <div className="text-center">
+                        <Typography variant="body1" className="text-goldie mx-auto" sx={{ mt: 2 }}>
+                            {error}
+                        </Typography>
+                        </div>
+                    )}
                 <Box className="relative mb-6" data-te-input-wrapper-init>
                     <input type="text"
                         className="peer block min-h-[auto] w-full rounded border-0 py-[0.32rem] px-3 leading-[1.6]
@@ -137,7 +139,7 @@ export const ContactUs = () => {
                 </Box>
                 <Button 
                 type="submit"
-                className="mb-6 inline-block w-full rounded bg-primary px-6 pt-2.5 pb-2 text-xs font-medium uppercase leading-normal text-white shadow-[0_4px_9px_-4px_#3b71ca] transition duration-150 ease-in-out">Send</Button>
+                className="mb-6 inline-block w-full rounded bg-primary px-6 pt-2.5 pb-2 text-xs font-medium uppercase leading-normal shadow-[0_4px_9px_-4px_#3b71ca] transition duration-150 ease-in-out">Send</Button>
                
                 </form>
             </Box>

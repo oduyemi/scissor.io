@@ -9,6 +9,8 @@ import GetQrCode from "../pages/GetQrCode/index";
 import GetURL from "../pages/GetURL/index";
 import Shortner from "../pages/Shortner/index";
 
+
+
 export const Navigation = () => {
     return (
         <BrowserRouter>

@@ -8,6 +8,7 @@ export const Stats = () => {
     const [analytics, setAnalytics] = useState({});
     const [loading, setLoading] = useState(false);
     const [shortUrl, setShortUrl] = useState("");
+    const [error, setError] = useState(null);
 
     const handleTracker = async () => {
         try {
@@ -16,16 +17,24 @@ export const Stats = () => {
             const responseData = response.data;
 
             if (response.status === 200) {
+
                 console.log("Success:", responseData);
                 setAnalytics(responseData);
+                setError(null);
+
             } else {
+
                 console.error("Error:", responseData);
                 setAnalytics({});
+                setError(`Error: ${error.message || "Unknown error"}`);
+
             }
         } catch (error) {
+
             console.error("Error tracking URL:", error);
             setAnalytics({});
-            alert(`Error tracking URL: ${error.message}`);
+            setError(`Error: ${error.message || "Unknown error"}`);
+            
         } finally {
             setLoading(false);
         }
@@ -39,7 +48,14 @@ export const Stats = () => {
 
     return (
         <Box className="container my-14 mx-auto md:px-6">
-            <Container maxWidth="md" className="mt-14 text-white">
+            <Container maxWidth="md" className=" main_container mt-14 text-white">
+                {error && (
+                    <div className="text-center">
+                    <Typography variant="body1" className="text-goldie mx-auto" sx={{ mt: 2 }}>
+                        {error}
+                    </Typography>
+                    </div>
+                )}
                 <Typography
                     variant="h2"
                     className="inline pl-8 mt-8"
@@ -74,7 +90,7 @@ export const Stats = () => {
                                 className="w-full text-center pb-2"
                             >
                                 Enter the URL to find out how many clicks it has received so far.
-                                <span><Typography variant="h6" className="text-goldie">Example: pjzjsl</Typography></span>
+                                <span><Typography variant="h6" sx={{ fontWeight:"light", fontSize:"16px"}} className="text-pee">Example: pjzjsl</Typography></span>
                             </Typography>
                         </Grid>
                         <Grid maxWidth="xl" className="mx-auto w-full">
@@ -89,11 +105,11 @@ export const Stats = () => {
                                                 required
                                                 value={shortUrl}
                                                 onChange={(e) => setShortUrl(e.target.value)}
-                                                placeholder="Enter Your teeny link here"
+                                                placeholder="Enter Your Scissor Link Here"
                                             />
                                             <Box className="flex justify-center">
                                                 <Button
-                                                    className="mt-[-1%] text-white font-light py-2 px-3 rounded"
+                                                    className="mt-[-1%] font-light py-2 px-3 rounded"
                                                     type="submit"
                                                     disabled={loading}>
                                                     {loading ? "Hang on..." : "View Clicks"}  
@@ -145,16 +161,17 @@ export const Stats = () => {
                         </Grid>
                     </Grid>
                 </Box>
-                <Box maxWidth="xl">
+                    <Box maxWidth="xl">
                     <Link to="/shorten-link">
                         <Typography 
                         variant="h6" 
                         sx={{ color: "#FAF2A1", fontWeight: "light", fontSize: "14px", textAlign: "center" }}
+                        className="another-link"
                         >
                             Shorten Another Link
                         </Typography>
                     </Link>
-                </Box>
+                </Box> 
             </Container>
         </Box>
     );

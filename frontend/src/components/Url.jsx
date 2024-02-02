@@ -8,6 +8,7 @@ export const Url = () => {
     const [url, setUrl] = useState({});
     const [loading, setLoading] = useState(false);
     const [shortUrl, setShortUrl] = useState("");
+    const [error, setError] = useState(null);
 
     const handleUrl = async () => {
         try {
@@ -18,15 +19,17 @@ export const Url = () => {
             if (response.status === 200) {
                 console.log("Success:", responseData);
                 setUrl(response.data);
+                setError(null);
 
             } else {
                 console.error("Error:", responseData);
                 setUrl({});
+                setError(`Error: ${error.message || "Unknown error"}`);
             }
         } catch (error) {
             console.error("Error fetching initial URL:", error);
             setUrl({});
-            alert(`Error fetching initial URL: ${error.message}`);
+            setError(`Error: ${error.message || "Unknown error"}`);
         } finally {
             setLoading(false);
         }
@@ -44,6 +47,13 @@ export const Url = () => {
            <Grid maxWidth="md">
            <Box className="container mt-8 mx-auto md:px-6">
             <Container maxWidth="md" className="mt-14 text-white">
+                {error && (
+                    <div className="text-center">
+                    <Typography variant="body1" className="text-goldie mx-auto" sx={{ mt: 2 }}>
+                        {error}
+                    </Typography>
+                    </div>
+                )}
                 <Typography
                     variant="h2"
                     className="inline pl-8 mt-8"
@@ -78,7 +88,7 @@ export const Url = () => {
                                 className="w-full text-center pb-2"
                             >
                                 Enter the your Scissor shortened link to fetch the initial url you shortened.
-                                <span><Typography variant="h6" className="text-goldie">Example: pjzjsl</Typography></span>
+                                <span><Typography variant="h6" sx={{ fontWeight:"light", fontSize:"16px"}} className="text-pee">Example: pjzjsl</Typography></span>
                             </Typography>
                         </Grid>
                         <Grid maxWidth="xl" className="mx-auto w-full">
@@ -93,10 +103,10 @@ export const Url = () => {
                                                 required
                                                 value={shortUrl}
                                                 onChange={(e) => setShortUrl(e.target.value)}
-                                                placeholder="Enter Your teeny link here"
+                                                placeholder="Enter Your Scissor Link Here"
                                             />
                                                 <Button
-                                                    className="mt-[1px] text-white font-light py-2 px-3 rounded"
+                                                    className="mt-[1px] font-light py-2 px-3 rounded"
                                                     type="submit"
                                                     disabled={loading}>
                                                     {loading ? "Hang on..." : "Get Initial URL"}  

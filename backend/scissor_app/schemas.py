@@ -3,12 +3,21 @@ from pydantic import BaseModel
 from typing import Optional, List
 
 
-class ShortenRequest(BaseModel):
+
+class ShortenerRequest(BaseModel):
     original_url: str
+
+
+class ShortenerResponse(BaseModel):
+    original_url: str
+    shortened_url:str
+    qr_code_image: str
+
+class CheckerResponse(BaseModel):
     shortened_url: str
-    qr_code_path: str
-    visit_count: Optional[int]
-    time: Optional[datetime]
+    qr_code_image: str
+
+
 
 
 class ShortenResponse(BaseModel):
@@ -17,6 +26,9 @@ class ShortenResponse(BaseModel):
     qr_code_path: Optional[str]
     visit_count: Optional[int]
     visit_time: Optional[datetime]
+
+class Test(BaseModel):
+    url: str
 
 
 class URLRequest(BaseModel):

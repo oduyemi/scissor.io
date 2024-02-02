@@ -27,7 +27,9 @@ export const Banner = () => {
                             <Button className="mt-4">Start For Free</Button>
                         </Link>
                         <Typography variant="h6" paragraph
-                            sx={{ fontWeight: "light", color:"#777", fontSize:"14px", marginTop :"10px" }}>
+                            sx={{ fontWeight: "light", fontSize:"14px", marginTop :"10px" }}
+                            className="text-goldie"
+                        >
                             &#42; No Login Required&#33;
                         </Typography>
                     </Box>

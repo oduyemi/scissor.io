@@ -6,39 +6,63 @@ import Button from "./elements/Button";
 import { Link } from "react-router-dom";
 import axios from "axios";
 
+
+
 export const GetQr = () => {
-    const [qr, setQr] = useState({});
+    const [qr, setQr] = useState({ imageUrl: "" });
     const [loading, setLoading] = useState(false);
     const [shortUrl, setShortUrl] = useState("");
+    const [error, setError] = useState(null);
 
     const handleQr = async () => {
         try {
             setLoading(true);
             const response = await axios.get(`http://127.0.0.1:8000/get-qr/${shortUrl}`, {
-                responseType: 'arraybuffer',
+                
+            responseType: 'arraybuffer',
+
             });
 
             const responseData = response.data;
 
             if (response.status === 200) {
+
                 console.log("Success:", responseData);
-
                 const blob = new Blob([responseData], { type: 'image/png' });
-
                 const imageUrl = URL.createObjectURL(blob);
-
                 setQr({ imageUrl });
-            } else {
+                setError(null);
+
+            } else if (response.status === 404) {
+
+                setQr({});
+                console.log("Link not found. Please shorten your link first."); 
+                setError(`Error: "Link not found. Please shorten your link first.`);    
+
+            }else {
+
                 console.error("Error:", responseData);
                 setQr({});
+                setError(`Error: ${responseData.message || "Unknown error"}`);
             }
         } catch (error) {
+
             console.error("Error fetching Qr Code:", error);
             setQr({});
-            alert(`Error fetching Qr Code: ${error.message}`);
+            setError(`Error: ${error.message || "Unknown error"}`);
+
         } finally {
             setLoading(false);
         }
+    };
+
+    const handleDownload = () => {
+        const link = document.createElement('a');
+        link.href = qr.imageUrl;
+        link.download = 'qr_code.png';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
     };
 
     const handleFormSubmit = async (e) => {
@@ -53,6 +77,13 @@ export const GetQr = () => {
            <Grid maxWidth="md">
            <Box className="container mt-8 mx-auto md:px-6">
             <Container maxWidth="md" className="mt-14 text-white">
+                {error && (
+                    <div className="text-center">
+                    <Typography variant="body1" className="text-goldie mx-auto" sx={{ mt: 2 }}>
+                        {error}
+                    </Typography>
+                    </div>
+                )}
                 <Typography
                     variant="h2"
                     className="inline pl-8 mt-8"
@@ -87,7 +118,7 @@ export const GetQr = () => {
                                 className="w-full text-center pb-2"
                             >
                                 Enter the your Scissor shortened link to fetch the QR code assigned to it.
-                                <span><Typography variant="h6" className="text-goldie">Example: rb.gy/pjzjsl</Typography></span>
+                                <span><Typography variant="h6" sx={{ fontWeight:"light", fontSize:"16px"}} className="text-pee">Example: rb.gy/pjzjsl</Typography></span>
                             </Typography>
                         </Grid>
                         <Grid maxWidth="xl" className="mx-auto w-full">
@@ -102,10 +133,10 @@ export const GetQr = () => {
                                                 required
                                                 value={shortUrl}
                                                 onChange={(e) => setShortUrl(e.target.value)}
-                                                placeholder="Enter Your teeny link here"
+                                                placeholder="Enter Your Scissor Link Here"
                                             />
                                                 <Button
-                                                    className="mt-[1px] text-white font-light py-2 px-3 rounded"
+                                                    className="mt-[1px] font-light py-2 px-3 rounded"
                                                     type="submit"
                                                     disabled={loading}>
                                                     {loading ? "Hang on..." : "Get QR Code"}  
@@ -129,9 +160,13 @@ export const GetQr = () => {
                                                 />
                                             </Card>
                                             <Box className="text-center">
-                                                <Button variant="contained" className="font-light py-2 px-4  text-white rounded inline btnUp">
-                                                    <span><Icon path={mdiTrayArrowDown} size={1} className="icons inline" /></span>
-                                                            &nbsp;Download
+                                                <Button variant="contained"
+                                                    onClick = {handleDownload}
+                                                    className="font-light py-2 px-4 rounded inline btnUp">
+                                                        <span> 
+                                                            <Icon path={mdiTrayArrowDown} size={1} 
+                                                                className="icons inline" /></span>
+                                                                    &nbsp;Download
                                                 </Button>
                                             </Box>
                                         </div>
@@ -144,20 +179,20 @@ export const GetQr = () => {
                 </Box>
             </Container>
         </Box>
-    </Grid>
-        <Box maxWidth="xl">
-                    <Link to="/shorten-link">
-                        <Typography 
-                        variant="h6" 
-                        sx={{ color: "#FAF2A1", fontWeight: "light", fontSize: "14px", textAlign: "center" }}
-                        className="another-link"
-                        >
-                            Shorten Another Link
-                        </Typography>
-                    </Link>
-                </Box> 
-            </Box>
+        </Grid>
+            <Box maxWidth="xl">
+                <Link to="/shorten-link">
+                    <Typography 
+                    variant="h6" 
+                    sx={{ color: "#FAF2A1", fontWeight: "light", fontSize: "14px", textAlign: "center" }}
+                    className="another-link"
+                    >
+                        Shorten Another Link
+                    </Typography>
+                </Link>
+            </Box> 
         </Box>
+    </Box>
     );
 };
 

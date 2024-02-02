@@ -6,7 +6,7 @@ from .database import SessionLocal
 from instance.config import SECRET_KEY, DATABASE_URI
 from fastapi.middleware.cors import CORSMiddleware
 
-starter = FastAPI(title="scissor.io", description="Generate a shorter URL today")
+starter = FastAPI(title="Scissor", description="Brief is the new black. Generate a shorter URL today")
 
 origins = [
     "http://localhost:3000",

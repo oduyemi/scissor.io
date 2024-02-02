@@ -13,6 +13,8 @@ os.environ["DATABASE_URI"] = os.getenv("DATABASE_URI", DATABASE_URI)
 
 print("Database URI:", DATABASE_URI)
 
+
+
 Base.metadata.create_all(bind = engine)
 
 print("Tables created")
