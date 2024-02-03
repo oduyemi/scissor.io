@@ -19,7 +19,7 @@ import { Link } from "react-router-dom";
       return (
         isMobileMenuOpen && (
           <Box className="mobile-menu-popup">
-            <Box className="mobile-menu-content">           
+            <Box className="mobile-menu-content sm:block md:hidden">           
               <button className="close-button" onClick={closeMobileMenu}>
                 X
               </button>
@@ -68,7 +68,7 @@ import { Link } from "react-router-dom";
         id="header"
         className="bg-transparent text-white"
       >
-        <Box className="md:flex sm:hidden items-center nav-icon justify-between" onClick={toggleMobileMenu}>
+        <Box className="md:flex items-center sm:hidden nav-icon justify-between" onClick={toggleMobileMenu}>
           <Box className="md:hidden flex items-center">
             <svg
               className="w-12 h-12"
