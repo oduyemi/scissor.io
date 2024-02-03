@@ -65,10 +65,10 @@ export const Feature = () => {
     return(
         <>
             <div>
-        <Container maxWidth="md">
+        <Container maxWidth="md" className="mt-14 main_container">
           <Typography
             variant="h2"
-            className="inline pl-8 text-white"
+            className="inline pl-8 text-white topic-md gap"
             align="center"
             sx={{
               fontWeight: "bold",
@@ -78,7 +78,7 @@ export const Feature = () => {
                 What Does <span>
                     <Typography
                     variant="h2"
-                    className="inline text-pee"
+                    className="inline text-pee gap"
                     sx={{
                         fontWeight: "bold"
                     }}>
@@ -86,7 +86,7 @@ export const Feature = () => {
                     </Typography></span> Offer?
           </Typography>
           <Box maxWidth="xl"  className="mx-auto mt-4 mb-10">
-                <Typography variant="h6" sx={{ fontSize:"16px", fontWeight:"light" }} paragraph className="w-full text-white">
+                <Typography variant="h6" sx={{ fontSize:"16px", fontWeight:"light" }} paragraph className="w-full inner-text text-white">
                     Scissor allows you to shorten URLs by pasting a long URL into the it&apos;s
                     platform and a shorter URL gets automatically generated. The shortened URL
                     is designed to be as short as possible, making it easy to share on social

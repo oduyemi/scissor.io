@@ -50,7 +50,7 @@ export const ContactUs = () => {
       };
     
     return(
-        <Box className="container my-12 mx-auto md:px-6 ">
+        <Box className="main_container my-14 mx-auto md:px-6 ">
         <section className="mb-8">
             <Box className="flex justify-center">
             <Box className="text-center md:max-w-xl lg:max-w-3xl">

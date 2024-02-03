@@ -1,12 +1,13 @@
-import os, random, string, qr_codes, qrcode, base64, hashlib, io, validators, aiosmtplib, time
+import os, random, string, qr_codes, qrcode, base64, hashlib, io, validators, aiosmtplib, time, logging
+from datetime import datetime
 from cachetools import TTLCache, cached
 from fastapi import APIRouter, Request, status, Depends, HTTPException, Form
-from fastapi.responses import StreamingResponse, RedirectResponse, FileResponse
+from fastapi.responses import StreamingResponse, RedirectResponse, FileResponse, JSONResponse
 from sqlalchemy.orm import Session
 from scissor_app import starter, models, schemas
 from typing import Optional, List
 from scissor_app.models import URL, Visit, Contact
-from .schemas import VisitResponse, ContactResponse, ContactRequest, CheckerResponse, ShortenerRequest
+from .schemas import VisitResponse, ContactResponse, ContactRequest, CheckerResponse, ShortenerRequest, QRResponse, VisitDetail
 from .dependencies import get_db
 from io import BytesIO
 from dotenv import load_dotenv
@@ -28,6 +29,8 @@ if EMAIL_ADDRESS is None or EMAIL_PASSWORD is None:
 scissor_router = APIRouter()
 
 cache = TTLCache(maxsize=100, ttl=300)
+logger = logging.getLogger(__name__)
+
 
 
 def rate_limiter(max_requests: int, time_frame: int):
@@ -35,7 +38,7 @@ def rate_limiter(max_requests: int, time_frame: int):
         calls = []
 
         @wraps(func)
-        async def wrapper(request: Request, *args, **kwargs):
+        async def wrapper(short_url: str, request: Request, *args, **kwargs):
             now = time.time()
             requests_in_timeframe = [r for r in calls if r > now - time_frame]
 
@@ -43,11 +46,13 @@ def rate_limiter(max_requests: int, time_frame: int):
                 raise HTTPException(status_code=status.HTTP_429_TOO_MANY_REQUESTS, detail="Rate limit exceeded!")
 
             calls.append(now)
-            return await func(request, *args, **kwargs)
+            return func(short_url, request, *args, **kwargs)
 
         return wrapper
 
     return decorator
+
+
 
 
 def generate_short_url(length=6):
@@ -108,37 +113,7 @@ async def send_email_async(to_email, subject, body):
 
 @starter.get("/")
 async def get_index():
-    return {"message": "Welcome to scissor.io"}
-
-
-@starter.get("/check-url/{url}", response_model=schemas.CheckerResponse)
-@cached(cache)
-@rate_limiter(max_requests=10, time_frame=60)
-def check_short_url_and_qr_code(url: str, db: Session = Depends(get_db)):
-    try:
-        if not validators.url(url):
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid URL")
-
-        cached_result = cache.get(url)
-        if cached_result:
-            return cached_result
-
-        db_url = db.query(URL).filter(URL.original_url == url).first()
-
-        if db_url is None:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="URL not found. Shorten your URL")
-
-        response = {
-            "shortened_url": db_url.shortened_url,
-            "qr_code_image": db_url.qr_code_path 
-        }
-
-        cache[url] = response
-
-        return response
-    except (HTTPException, Exception) as e:
-        print(f"Error: {e}")
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Internal Server Error")
+    return {"message": "Scissor!"}
 
 
 @starter.post("/shorten-url", response_model=schemas.ShortenerResponse)
@@ -146,7 +121,7 @@ def check_short_url_and_qr_code(url: str, db: Session = Depends(get_db)):
 def create_short_url(request: ShortenerRequest, db: Session = Depends(get_db)):
     try:
         url = request.original_url
-
+        print(f"Received URL: {url}")
         if not validators.url(url):
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid URL")
 
@@ -160,11 +135,12 @@ def create_short_url(request: ShortenerRequest, db: Session = Depends(get_db)):
                 "shortened_url": db_url.shortened_url,
                 "qr_code_image": db_url.qr_code_path 
             }
+
         else:
             short_url = generate_short_url()
             qr_code_path, qr_code_image = generate_qr_code_image(url_hash)
 
-            db_url = models.URL(
+            db_url = URL(
                 original_url = url,
                 shortened_url = short_url,
                 qr_code_path = qr_code_path,
@@ -179,8 +155,8 @@ def create_short_url(request: ShortenerRequest, db: Session = Depends(get_db)):
             }
 
     except (HTTPException, Exception) as e:
-        print(f"Error: {e}")
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Internal Server Error")
+        logger.error(f"Error: {e}")
+        raise
 
 
 @starter.get("/{short_url}", response_model=schemas.ShortenResponse)
@@ -198,43 +174,18 @@ def redirect_to_original(short_url: str, db: Session = Depends(get_db)):
         db.commit()
 
         return RedirectResponse(url.original_url)
+
     except (HTTPException, Exception) as e:
-        print(f"Error: {e}")
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Internal Server Error")
+        logger.error(f"Error: {e}")
+        raise 
 
 
-@starter.get("/original-url/{short_url}", response_model=schemas.URLResponse)
-@cached(cache)
-def get_original_url(short_url: str, db: Session = Depends(get_db)):
-        try:
-            cached_result = cache.get(short_url)
-            if cached_result:
-                return cached_result
-                check = db.query(URL).filter(URL.shortened_url == short_url).first()
-
-            if check:
-                response = {
-                    "shortened_url": check.shortened_url,
-                    "original_url": check.original_url
-                }
-
-                cache[short_url] = response
-
-                return response
-
-            else:
-                raise HTTPException(status_code=404, detail="Link is not valid")
-
-        except (HTTPException, Exception) as e:
-            print(f"Error: {e}")
-            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Internal Server Error")
-
-
-@starter.get("/get-qr/{short_url}", response_model=List[schemas.QRResponse])
+@starter.get("/get-qr/{short_url}", response_model=schemas.QRResponse)
 @cached(cache)
 @rate_limiter(max_requests=10, time_frame=60)
-def get_qr_code(short_url: str, db: Session = Depends(get_db)):
+def get_qr_code(short_url: str, request: Request, db: Session = Depends(get_db)):
     try:
+        print(f"Received URL: {short_url}")
         cached_result = cache.get(short_url)
         if cached_result:
             return cached_result
@@ -245,36 +196,53 @@ def get_qr_code(short_url: str, db: Session = Depends(get_db)):
             raise HTTPException(status_code=404, detail="Link is not valid")
 
         qr_code_path = link.qr_code_path
+        response_model = FileResponse(qr_code_path, media_type="image/png")
 
-        response = FileResponse(qr_code_path, media_type="image/png")
+        cache[short_url] = response_model
 
-        cache[short_url] = response
-
-        return response
-
-    except (HTTPException, Exception) as e:
+        return response_model
+    except Exception as e:
         print(f"Error: {e}")
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Internal Server Error")
+        raise
 
-
-@starter.get("/analytics/{short_url}", response_model=schemas.VisitResponse)
-@cached(cache)
+@starter.get("/get-qr/{short_url}", response_model=schemas.QRResponse)
 @rate_limiter(max_requests=10, time_frame=60)
-def get_analytics(short_url: str, db: Session = Depends(get_db)):
+@cached(cache)
+def get_qr_code(short_url: str, request: Request, db: Session = Depends(get_db)):
     try:
+        print(f"Received URL: {short_url}")
         cached_result = cache.get(short_url)
         if cached_result:
             return cached_result
 
+        link = db.query(URL).filter(URL.shortened_url == short_url).first()
+
+        if not link:
+            raise HTTPException(status_code=404, detail="Link is not valid")
+
+        qr_code_path = link.qr_code_path
+        response_model = schemas.QRResponse(qr_code_path=qr_code_path)
+
+        cache[short_url] = response_model
+
+        return response_model
+    except Exception as e:
+        print(f"Error: {e}")
+        raise
+
+
+@starter.get("/analytics/{short_url}", response_model=schemas.VisitResponse)
+def get_analytics(short_url: str, request: Request, db: Session = Depends(get_db)):
+    try:
+        print(f"Received URL: {short_url}")
         url = db.query(URL).filter(URL.shortened_url == short_url).first()
 
         if url is None:
             raise HTTPException(status_code=404, detail="Shortened URL not found")
 
         visits = db.query(Visit).filter(Visit.short_url == short_url).all()
-        visit_times = [visit.visit_time for visit in visits]
 
-        response = VisitResponse(
+        response_model = VisitResponse(
             original_url=url.original_url,
             short_url=url.shortened_url,
             visit_times=[VisitDetail(visit_time=visit.visit_time) for visit in visits],
@@ -282,12 +250,15 @@ def get_analytics(short_url: str, db: Session = Depends(get_db)):
             visits=[VisitDetail(visit_time=visit.visit_time) for visit in visits]
         )
 
-        cache[short_url] = response
+        return response_model
 
-        return response
-    except (HTTPException, Exception) as e:
-        print(f"Error: {e}")
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Internal Server Error")
+    except HTTPException as e:
+        logger.error(f"HTTP Exception: {e}")
+        raise
+    except Exception as e:
+        logger.error(f"Error: {e}")
+        raise
+
 
 
 @starter.get("/contact/messages", response_model=List[schemas.ContactResponse])
@@ -319,8 +290,8 @@ def get_messages(db: Session = Depends(get_db)):
         return response_data
 
     except (HTTPException, Exception) as e:
-        print(f"Error: {e}")
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Internal Server Error")
+        logger.error(f"Error: {e}")
+        raise 
 
 
 @starter.get("/contact/messages/{message_id}", response_model=schemas.ContactResponse)
@@ -337,8 +308,8 @@ def get_message(message_id: int, db: Session = Depends(get_db)):
             "message": response.message
         }
     except (HTTPException, Exception) as e:
-        print(f"Error: {e}")
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Internal Server Error")
+        logger.error(f"Error: {e}")
+        raise 
 
 
 @starter.post("/send-message", response_model=ContactResponse)
@@ -361,5 +332,5 @@ async def send_message(message: ContactRequest, db: Session = Depends(get_db)):
         return {"message": "Your message has been received. We will get back to you shortly."}
 
     except (HTTPException, Exception) as e:
-        print(f"Error: {e}")
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Internal Server Error")
+        logger.error(f"Error: {e}")
+        raise

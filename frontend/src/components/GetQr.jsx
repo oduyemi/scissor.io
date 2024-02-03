@@ -73,10 +73,12 @@ export const GetQr = () => {
 
     return (
         <Box>
-        <Box maxWidth="xl" sx={{ display:"flex", alignItems:"center", justifyContent:"center" }} className="text-white">
+        <Box maxWidth="xl" 
+            sx={{ display:"flex", alignItems:"center", justifyContent:"center" }} 
+            className="text-white my-14 main_container">
            <Grid maxWidth="md">
-           <Box className="container mt-8 mx-auto md:px-6">
-            <Container maxWidth="md" className="mt-14 text-white">
+           <Box className="container mt-8 mx-auto md:px-6 mt-14">
+            <Container maxWidth="md" className="text-white">
                 {error && (
                     <div className="text-center">
                     <Typography variant="body1" className="text-goldie mx-auto" sx={{ mt: 2 }}>
@@ -86,7 +88,7 @@ export const GetQr = () => {
                 )}
                 <Typography
                     variant="h2"
-                    className="inline pl-8 mt-8"
+                    className="inline pl-8 mt-8 topic-md gap"
                     align="center"
                     sx={{
                         fontWeight: "bold",
@@ -115,10 +117,11 @@ export const GetQr = () => {
                                 variant="h6"
                                 sx={{ fontSize: "16px", fontWeight: "light", margin: "auto" }}
                                 paragraph
-                                className="w-full text-center pb-2"
+                                gutterBottom
+                                className="w-full text-center pb-2 inner-text"
                             >
                                 Enter the your Scissor shortened link to fetch the QR code assigned to it.
-                                <span><Typography variant="h6" sx={{ fontWeight:"light", fontSize:"16px"}} className="text-pee">Example: rb.gy/pjzjsl</Typography></span>
+                                <span><Typography variant="h6" sx={{ fontWeight:"light", fontSize:"16px"}} className="text-pee inner-text-sm">Example: rb.gy/pjzjsl</Typography></span>
                             </Typography>
                         </Grid>
                         <Grid maxWidth="xl" className="mx-auto w-full">
@@ -127,7 +130,7 @@ export const GetQr = () => {
                                     <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
                                         <Box className="flex items-center gap-2 mx-auto">
                                             <input
-                                                className="shadow appearance-none border rounded py-2 px-14 mx-auto text-gray-300 leading-tight focus:outline-none focus:shadow-outline"
+                                                className="fields shadow appearance-none border rounded py-2 px-14 mx-auto text-gray-300 leading-tight focus:outline-none focus:shadow-outline"
                                                 type="text"
                                                 id="phone"
                                                 required
@@ -180,7 +183,8 @@ export const GetQr = () => {
             </Container>
         </Box>
         </Grid>
-            <Box maxWidth="xl">
+        </Box>
+             <Box maxWidth="xl">
                 <Link to="/shorten-link">
                     <Typography 
                     variant="h6" 
@@ -191,7 +195,6 @@ export const GetQr = () => {
                     </Typography>
                 </Link>
             </Box> 
-        </Box>
     </Box>
     );
 };

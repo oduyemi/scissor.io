@@ -23,23 +23,23 @@ import { Link } from "react-router-dom";
               <button className="close-button" onClick={closeMobileMenu}>
                 X
               </button>
-              <Link to="/features" className="mobile-menu-link">
+              <Link to="/features" className="mobile-menu-link" onClick={closeMobileMenu}>
                 <Typography variant="h6" paragraph sx={{fontWeight: "light" }} className="text-sm">
                   Features
                 </Typography>
               </Link>
               
-              <Link to="/stats" className="mobile-menu-link">
+              <Link to="/stats" className="mobile-menu-link" onClick={closeMobileMenu}>
                 <Typography variant="h6" sx={{fontWeight: "light" }} paragraph className="text-sm">
                   Statistics
                 </Typography>
               </Link>
-              <Link to="/get-qr-code" className="mobile-menu-link">
+              <Link to="/get-qr-code" className="mobile-menu-link" onClick={closeMobileMenu}>
                 <Typography variant="h6" sx={{fontWeight: "light" }} paragraph className="text-sm">
                   Get QR Code
                 </Typography>
               </Link>
-              <Link to="/get-original-url" className="mobile-menu-link">
+              <Link to="/get-original-url" className="mobile-menu-link" onClick={closeMobileMenu}>
                 <Typography variant="h6" sx={{fontWeight: "light" }} paragraph className="text-sm">
                   Original URL
                 </Typography>
@@ -47,12 +47,13 @@ import { Link } from "react-router-dom";
               <Link
                 to="/contact"
                 className="mobile-menu-link"
+                onClick={closeMobileMenu}
               >
                 <Typography variant="h6" sx={{fontWeight: "light" }} paragraph className="text-sm">
                   Contact
                 </Typography>
               </Link>
-              <Link to="/register" variant="outline" className="mobile-menu-link">
+              <Link to="/shorten-link" variant="outline" className="mobile-menu-link" onClick={closeMobileMenu}>
                 <Button>Get Started</Button>  
               </Link>
             </Box>
@@ -67,8 +68,8 @@ import { Link } from "react-router-dom";
         id="header"
         className="bg-transparent text-white"
       >
-        <Box className="mt-0 py-1 w-full flex items-center nav-icon justify-between">
-          <Box className="md:hidden flex items-center" onClick={toggleMobileMenu}>
+        <Box className="md:flex sm:hidden items-center nav-icon justify-between" onClick={toggleMobileMenu}>
+          <Box className="md:hidden flex items-center">
             <svg
               className="w-12 h-12"
               fill="currentColor"
@@ -83,17 +84,17 @@ import { Link } from "react-router-dom";
             </svg>
           </Box>
           <Box className="logo">
-            <Link to="/" className="text-l block py-2 w-full">
+            <Link to="/" className="text-l block">
             <img
               src={require("../assets/images/logo/logo.png")}
               alt="logo"
-              width="87%"
-              className="pl-10 mt-[-5%] object-cover"
+              width="100%"
+              className="pl-10 w-40 w-40 mt-[-10px]"
             />
             </Link>
           </Box>
           <ul
-            className={`nav-menu-wrapper mx-auto flex-col md:flex-row flex md:space-x-8 mt-4 md:mt-0 text-sm`}
+            className={`nav-menu-wrapper mx-auto flex-col md:flex-row flex md:space-x-8 mt-8 md:mt-0 text-sm`}
             id="mobile-menu"
           >
             <li>

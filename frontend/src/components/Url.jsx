@@ -45,7 +45,7 @@ export const Url = () => {
         <Box>
         <Box maxWidth="xl" sx={{ display:"flex", alignItems:"center", justifyContent:"center" }} className="text-white">
            <Grid maxWidth="md">
-           <Box className="container mt-8 mx-auto md:px-6">
+           <Box className="main_container my-14 mx-auto md:px-6">
             <Container maxWidth="md" className="mt-14 text-white">
                 {error && (
                     <div className="text-center">
@@ -56,7 +56,7 @@ export const Url = () => {
                 )}
                 <Typography
                     variant="h2"
-                    className="inline pl-8 mt-8"
+                    className="inline pl-8 mt-8 topic-md gap"
                     align="center"
                     sx={{
                         fontWeight: "bold",
@@ -97,7 +97,7 @@ export const Url = () => {
                                     <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
                                         <Box className="flex items-center gap-2 mx-auto">
                                             <input
-                                                className="shadow appearance-none border rounded py-2 px-14 mx-auto text-gray-300 leading-tight focus:outline-none focus:shadow-outline"
+                                                className="fields shadow appearance-none border rounded py-2 px-14 mx-auto text-gray-300 leading-tight focus:outline-none focus:shadow-outline"
                                                 type="text"
                                                 id="phone"
                                                 required
@@ -145,8 +145,9 @@ export const Url = () => {
                 </Box>
             </Container>
         </Box>
-    </Grid>
-        <Box maxWidth="xl">
+            </Grid>
+            </Box>
+                <Box maxWidth="xl">
                     <Link to="/shorten-link">
                         <Typography 
                         variant="h6" 
@@ -157,7 +158,6 @@ export const Url = () => {
                         </Typography>
                     </Link>
                 </Box> 
-            </Box>
         </Box>
     );
 };

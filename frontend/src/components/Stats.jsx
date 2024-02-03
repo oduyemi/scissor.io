@@ -47,8 +47,8 @@ export const Stats = () => {
 
 
     return (
-        <Box className="container my-14 mx-auto md:px-6">
-            <Container maxWidth="md" className=" main_container mt-14 text-white">
+        <Box className="main_container my-14 mx-auto md:px-6">
+            <Container maxWidth="md" className=" mt-14 text-white">
                 {error && (
                     <div className="text-center">
                     <Typography variant="body1" className="text-goldie mx-auto" sx={{ mt: 2 }}>
@@ -58,7 +58,7 @@ export const Stats = () => {
                 )}
                 <Typography
                     variant="h2"
-                    className="inline pl-8 mt-8"
+                    className="inline pl-8 mt-8 topic-md gap"
                     align="center"
                     sx={{
                         fontWeight: "bold",
@@ -87,10 +87,10 @@ export const Stats = () => {
                                 variant="h6"
                                 sx={{ fontSize: "16px", fontWeight: "light", margin: "auto" }}
                                 paragraph
-                                className="w-full text-center pb-2"
+                                className="w-full text-center pb-2 inner-text"
                             >
                                 Enter the URL to find out how many clicks it has received so far.
-                                <span><Typography variant="h6" sx={{ fontWeight:"light", fontSize:"16px"}} className="text-pee">Example: pjzjsl</Typography></span>
+                                <span><Typography variant="h6" sx={{ fontWeight:"light", fontSize:"16px"}} className="text-pee inner-text-sm">Example: pjzjsl</Typography></span>
                             </Typography>
                         </Grid>
                         <Grid maxWidth="xl" className="mx-auto w-full">
@@ -99,7 +99,7 @@ export const Stats = () => {
                                     <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
                                         <Box className="flex items-center gap-2 mx-auto">
                                             <input
-                                                className="shadow appearance-none border rounded py-2 px-14 mx-auto text-gray-300 leading-tight focus:outline-none focus:shadow-outline"
+                                                className="fields shadow appearance-none border rounded py-2 px-14 mx-auto text-gray-300 leading-tight focus:outline-none focus:shadow-outline"
                                                 type="text"
                                                 id="phone"
                                                 required
@@ -136,9 +136,11 @@ export const Stats = () => {
                                                     </span><br /> <br />
                                                     Shortened URL: &emsp;
                                                     <span>
+                                                    <Link to={`http://localhost:8000/${analytics.short_url}`} target="_blank">
                                                         <Typography variant="h6" sx={{ fontWeight: 'light'}} paragraph className="inline text-white">
                                                             {analytics.short_url}
                                                         </Typography>
+                                                    </Link>
                                                     </span><br /><br />
                                                     Visit Count: &emsp;
                                                     <span>

@@ -13,7 +13,8 @@ os.environ["DATABASE_URI"] = os.getenv("DATABASE_URI", DATABASE_URI)
 
 print("Database URI:", DATABASE_URI)
 
-
+# Test
+# Base.metadata.drop_all(bind=engine)
 
 Base.metadata.create_all(bind = engine)
 

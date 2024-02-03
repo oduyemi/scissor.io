@@ -3,6 +3,7 @@ import { Box, Card, Typography, Grid, Container } from "@mui/material";
 import Button from "./elements/Button";
 import Icon from "@mdi/react";
 import { mdiTrayArrowDown } from "@mdi/js";
+import { Link } from "react-router-dom";
 import axios from "axios";
 
 export const Shorten = () => {
@@ -15,15 +16,11 @@ export const Shorten = () => {
     const handleShorten = async () => {
         try {
             setLoading(true);
-            var domain = "";
-            if (url.startsWith("http://") || url.startsWith("https://")) {
-                domain = url.replace(/^https?:\/\//, '');
-            }
     
             const response = await axios.post(
                 "http://127.0.0.1:8000/shorten-url",
                 {
-                    original_url: encodeURIComponent(domain),
+                    original_url: url,
                 },
                 {
                     headers: {
@@ -70,8 +67,8 @@ export const Shorten = () => {
     };
 
     return (
-        <Box className="container my-14 mx-auto md:px-6">
-            <Container maxWidth="md" className="main_container mt-14 text-white">
+        <Box className="main_container my-14 mx-auto md:px-6">
+            <Container maxWidth="md" className="container mt-14 text-white">
                 {error && (
                     <div className="text-center">
                     <Typography variant="body1" className="text-goldie mx-auto" sx={{ mt: 2 }}>
@@ -81,7 +78,7 @@ export const Shorten = () => {
                 )}
                 <Typography
                     variant="h2"
-                    className="inline pl-8 mt-8"
+                    className="inline pl-8 mt-8 topic-md"
                     align="center"
                     sx={{
                         fontWeight: "bold",
@@ -93,7 +90,7 @@ export const Shorten = () => {
                     <span>
                         <Typography
                             variant="h2"
-                            className="inline text-pry"
+                            className="inline text-pry topic-md"
                             sx={{
                                 fontWeight: "bold",
                             }}
@@ -110,11 +107,11 @@ export const Shorten = () => {
                                 variant="h6"
                                 sx={{ fontSize: "16px", fontWeight: "light", margin: "auto" }}
                                 paragraph
-                                className="w-full text-center pb-2"
+                                className="w-full text-center pb-2 inner-text-sm"
                             >
                                 Enter your long URL here to create a short link and generate QR code.
                                 <span>
-                                    <Typography variant="h6" sx={{ fontWeight: "light", fontSize: "16px" }} className="text-pee">
+                                    <Typography variant="h6" sx={{ fontWeight: "light", fontSize: "16px" }} className="text-pee inner-textsm">
                                         Example: http://www.theviennareview.at/archives/2013/the-two-faces-of-viennas-bermuda-triangle
                                     </Typography>
                                 </span>
@@ -123,10 +120,10 @@ export const Shorten = () => {
                         <Grid maxWidth="xl" className="mx-auto w-full">
                             <Card className="shadow appearance-none mt-2" sx={{ backgroundColor: "transparent" }}>
                                 <form className="my-4 w-full" onSubmit={handleFormSubmit}>
-                                    <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+                                    <Box sx={{ display: "flex", justifyContent: "start", alignItems: "center" }}>
                                         <Box className="flex items-center gap-2 mx-auto">
                                             <input
-                                                className="shadow appearance-none border rounded py-2 px-14 mx-auto text-gray-300 leading-tight focus:outline-none focus:shadow-outline"
+                                                className="fields shadow appearance-none border rounded py-2 px-14 mx-auto text-gray-300 leading-tight focus:outline-none focus:shadow-outline"
                                                 type="text"
                                                 name="url"
                                                 required
@@ -152,23 +149,25 @@ export const Shorten = () => {
                                                 display: "flex",
                                                 flexDirection: "row",
                                                 alignItems: "center",
-                                                marginTop: 4,
+                                                marginTop: 4
                                             }}
                                         >
                                             <Typography
                                                 variant="h5"
                                                 sx={{ fontWeight: 'bold' }}
                                                 paragraph
-                                                className="w-full text-pee text-center pb-2 inline"
+                                                className="w-full text-pee pb-2 inline"
                                             >
                                                 Shortened URL: &emsp;
                                                 <span>
-                                                    <Typography variant="h6" sx={{ fontWeight: 'light'}} paragraph className="inline text-white"> 
-                                                        {shortenedUrl.shortened_url} 
-                                                    </Typography>
+                                                    <Link to={`http://localhost:8000/${shortenedUrl}`} target="_blank">
+                                                        <Typography variant="h6" sx={{ fontWeight: 'light', color: "#ffffff" }} paragraph className="inline text-white"> 
+                                                        {shortenedUrl} 
+                                                        </Typography>
+                                                    </Link>
                                                 </span><br /> <br />                                             
                                             </Typography>
-                                            <div className="ml-14 mb-2">
+                                            <div className="mx-auto mb-2">
                                             <Card 
                                             className="shadow appearance-none"
                                             sx={{ backgroundColor: "transparent"}}>
@@ -177,7 +176,7 @@ export const Shorten = () => {
                                                     alt="QR Code"
                                                     width={200}
                                                     height={200}
-                                                    className="h-32 w-32 object-contain mx-auto"
+                                                    className="h-100 w-100 object-contain"
                                             />
                                             </Card>
                                             <Box className="text-center">

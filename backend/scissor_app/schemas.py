@@ -44,6 +44,8 @@ class URLResponse(BaseModel):
     shortened_url: str
     original_url: str
 
+class QRRequest(BaseModel):
+    short_url: str
 
 class QRResponse(BaseModel):
     qr_code_path: str
