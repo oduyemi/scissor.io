@@ -1,6 +1,7 @@
 __pycache__
 /instance/__pycache__
 /scissor_app/__pycache__
+/tests/__pycache__
 
 # dependencies
 /node_modules

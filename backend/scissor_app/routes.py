@@ -33,6 +33,11 @@ logger = logging.getLogger(__name__)
 
 
 
+def validate_url(url):
+    regex = re.compile(r'^(https?://|www\.)')
+    return regex.match(url) is not None
+
+
 def rate_limiter(max_requests: int, time_frame: int):
     def decorator(func):
         calls = []
@@ -56,7 +61,7 @@ def rate_limiter(max_requests: int, time_frame: int):
 
 
 def generate_short_url(length=6):
-    chars = string.ascii_letters + string.digits
+    chars = (string.ascii_letters + string.digits).lower()
     return ''.join(random.choice(chars) for _ in range(length))
 
 
@@ -122,7 +127,7 @@ def create_short_url(request: ShortenerRequest, db: Session = Depends(get_db)):
     try:
         url = request.original_url
         print(f"Received URL: {url}")
-        if not validators.url(url):
+        if not validate_url(url) or not validators.url(url):
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid URL")
 
         hashed = hashlib.md5(url.encode())
