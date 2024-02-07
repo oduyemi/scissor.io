@@ -228,32 +228,30 @@ def get_qr_code(short_url: str, request: Request, db: Session = Depends(get_db))
 
 @starter.get("/original-url/{short_url}", response_model=schemas.URLResponse)
 @cached(cache)
-@rate_limiter(max_requests=10, time_frame=60)
-async def get_original_url(short_url: str, request: Request, db: Session = Depends(get_db)):
+def get_original_url(short_url: str, db: Session = Depends(get_db)):
     try:
-        print(f"Received URL: {short_url}")
         cached_result = cache.get(short_url)
         if cached_result:
-            return JSONResponse(content=cached_result)
+            return cached_result
 
         check = db.query(URL).filter(URL.shortened_url == short_url).first()
 
         if check:
-            response_model = schemas.URLResponse(
-                shortened_url=check.shortened_url,
-                original_url=check.original_url
-            )
-            cache[short_url] = response_model.dict()
-            return JSONResponse(content=response_model.dict())
+            response = {
+                "shortened_url": check.shortened_url,
+                "original_url": check.original_url
+            }
+
+            cache[short_url] = response
+
+            return response
         else:
             raise HTTPException(status_code=404, detail="Link is not valid")
 
-    except HTTPException as e:
-        logger.error(f"HTTP Exception: {e}")
-        raise
-    except Exception as e:
+    except (HTTPException, Exception) as e:
         logger.error(f"Error: {e}")
-        raise
+        raise 
+
 
 
 
