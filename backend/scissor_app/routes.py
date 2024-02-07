@@ -205,7 +205,7 @@ def redirect_to_original(short_url: str, request: Request, db: Session = Depends
 @cached(cache)
 def get_qr_code(short_url: str, request: Request, db: Session = Depends(get_db)):
     try:
-        logger.info(f"Received URL: {short_url}")
+        print(f"Received URL: {short_url}")
         cached_result = cache.get(short_url.lower())
         if cached_result:
             return cached_result
@@ -216,11 +216,11 @@ def get_qr_code(short_url: str, request: Request, db: Session = Depends(get_db))
             raise HTTPException(status_code=404, detail="Link is not valid")
 
         qr_code_path = link.qr_code_path
-        response_model = schemas.QRResponse(qr_code_path=qr_code_path)
 
-        cache[short_url] = response_model
+        cache[short_url] = qr_code_path
 
-        return response_model
+        return FileResponse(qr_code_path)
+
     except Exception as e:
         print(f"Error: {e}")
         raise
