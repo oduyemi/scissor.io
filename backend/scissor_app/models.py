@@ -30,11 +30,12 @@ class URL(Base):
 class Visit(Base):
     __tablename__ = "visits"
     id = Column(Integer, primary_key=True, index=True)
-    short_url = Column(String(10), index=True, nullable=False)
+    short_url = Column(String(255), index=True, nullable=False)
     time_shortened = Column(Integer, ForeignKey("urls.id"), nullable=False)
     visit_time = Column(DateTime, default=datetime.utcnow)
 
     url = relationship("URL", back_populates="visits")
+    
 
 class Contact(Base):
     __tablename__ = "contact"
@@ -45,5 +46,7 @@ class Contact(Base):
     date = Column(DateTime, default=datetime.utcnow)
 
     sendCopy = Column(Boolean, default=False)
+
+
 
     

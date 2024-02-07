@@ -3,6 +3,7 @@ from datetime import datetime
 from cachetools import TTLCache, cached
 from fastapi import APIRouter, Request, status, Depends, HTTPException, Form
 from fastapi.responses import StreamingResponse, RedirectResponse, FileResponse, JSONResponse
+from sqlalchemy import or_
 from sqlalchemy.orm import Session
 from scissor_app import starter, models, schemas
 from typing import Optional, List
@@ -14,6 +15,7 @@ from dotenv import load_dotenv
 from instance.config import SECRET_KEY, DATABASE_URI
 from functools import wraps
 from email.mime.text import MIMEText
+
 
 
 load_dotenv()
@@ -32,12 +34,13 @@ cache = TTLCache(maxsize=100, ttl=300)
 logger = logging.getLogger(__name__)
 
 
-
+# URL VALIDATOR
 def validate_url(url):
-    regex = re.compile(r'^(https?://|www\.)')
-    return regex.match(url) is not None
+    if url.startswith(('http://', 'https://')) or url.startswith('www.'):
+        return True
+    return False
 
-
+# RATE LIMITER
 def rate_limiter(max_requests: int, time_frame: int):
     def decorator(func):
         calls = []
@@ -57,14 +60,12 @@ def rate_limiter(max_requests: int, time_frame: int):
 
     return decorator
 
-
-
-
+# GENERATE SHORT URL
 def generate_short_url(length=6):
     chars = (string.ascii_letters + string.digits).lower()
     return ''.join(random.choice(chars) for _ in range(length))
 
-
+# QR CODE IMAGE
 def generate_qr_code_image(data: str, qr_codes_path: str = "qr_codes"):
     qr = qrcode.QRCode(
         version=1,
@@ -86,16 +87,14 @@ def generate_qr_code_image(data: str, qr_codes_path: str = "qr_codes"):
 
     return qr_code_path, img_base64
 
-
+# QR CODE
 def generate_qr_code(data: str, qr_codes_path: str = "qr_codes"):
-    qr_image_path = generate_qr_code_image(data, qr_codes_path)
-    
- 
+    qr_image_path = generate_qr_code_image(data, qr_codes_path) 
     with open(qr_image_path, "rb") as f:
         image_bytes = f.read()
     return StreamingResponse(content=image_bytes, media_type="image/png")
 
-
+# SEND EMAIL (CONTACT)
 async def send_email_async(to_email, subject, body):
     from_email = EMAIL_ADDRESS
     password = EMAIL_PASSWORD
@@ -114,7 +113,7 @@ async def send_email_async(to_email, subject, body):
 
 
 
-#   -   R  O  U  T  E  S   -
+#     -     R   O   U   T   E   S     -
 
 @starter.get("/")
 async def get_index():
@@ -122,12 +121,11 @@ async def get_index():
 
 
 @starter.post("/shorten-url", response_model=schemas.ShortenerResponse)
-@rate_limiter(max_requests=5, time_frame=60)
 def create_short_url(request: ShortenerRequest, db: Session = Depends(get_db)):
     try:
         url = request.original_url
         print(f"Received URL: {url}")
-        if not validate_url(url) or not validators.url(url):
+        if not validate_url(url):
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid URL")
 
         hashed = hashlib.md5(url.encode())
@@ -165,58 +163,50 @@ def create_short_url(request: ShortenerRequest, db: Session = Depends(get_db)):
 
 
 @starter.get("/{short_url}", response_model=schemas.ShortenResponse)
-def redirect_to_original(short_url: str, db: Session = Depends(get_db)):
+@rate_limiter(max_requests=5, time_frame=60)
+@cached(cache)
+def redirect_to_original(short_url: str, request: Request, db: Session = Depends(get_db)):
     try:
-        url = db.query(URL).filter(URL.shortened_url == short_url).first()
+        print(f"Received Shortened URL: {short_url}")
+        url = db.query(URL).filter(or_(URL.shortened_url == short_url, URL.original_url == short_url)).first()
 
         if url is None:
             raise HTTPException(status_code=404, detail="Shortened URL not found")
 
+        # Increment visit count
         url.visit_count += 1
 
-        visit = Visit(short_url=short_url, time_shortened=url.id, visit_time=datetime.utcnow())
+        # Visit record
+        visit = Visit(
+            short_url=short_url,
+            time_shortened=url.id,
+            visit_time=datetime.utcnow()
+        )
         db.add(visit)
         db.commit()
 
-        return RedirectResponse(url.original_url)
+        # Refactor url to use https protocol
+        link = url.original_url
+        if link.startswith("www."):
+            link = "https://" + link
+        
+        print(f"Redirecting to original URL: {link}")
+
+        # Redirect
+        return RedirectResponse(link)
 
     except (HTTPException, Exception) as e:
         logger.error(f"Error: {e}")
-        raise 
-
-
-@starter.get("/get-qr/{short_url}", response_model=schemas.QRResponse)
-@cached(cache)
-@rate_limiter(max_requests=10, time_frame=60)
-def get_qr_code(short_url: str, request: Request, db: Session = Depends(get_db)):
-    try:
-        print(f"Received URL: {short_url}")
-        cached_result = cache.get(short_url)
-        if cached_result:
-            return cached_result
-
-        link = db.query(URL).filter(URL.shortened_url == short_url).first()
-
-        if not link:
-            raise HTTPException(status_code=404, detail="Link is not valid")
-
-        qr_code_path = link.qr_code_path
-        response_model = FileResponse(qr_code_path, media_type="image/png")
-
-        cache[short_url] = response_model
-
-        return response_model
-    except Exception as e:
-        print(f"Error: {e}")
         raise
 
+
 @starter.get("/get-qr/{short_url}", response_model=schemas.QRResponse)
 @rate_limiter(max_requests=10, time_frame=60)
 @cached(cache)
 def get_qr_code(short_url: str, request: Request, db: Session = Depends(get_db)):
     try:
-        print(f"Received URL: {short_url}")
-        cached_result = cache.get(short_url)
+        logger.info(f"Received URL: {short_url}")
+        cached_result = cache.get(short_url.lower())
         if cached_result:
             return cached_result
 
@@ -236,10 +226,41 @@ def get_qr_code(short_url: str, request: Request, db: Session = Depends(get_db))
         raise
 
 
+@starter.get("/original-url/{short_url}", response_model=schemas.URLResponse)
+@cached(cache)
+@rate_limiter(max_requests=10, time_frame=60)
+async def get_original_url(short_url: str, request: Request, db: Session = Depends(get_db)):
+    try:
+        print(f"Received URL: {short_url}")
+        cached_result = cache.get(short_url)
+        if cached_result:
+            return JSONResponse(content=cached_result)
+
+        check = db.query(URL).filter(URL.shortened_url == short_url).first()
+
+        if check:
+            response_model = schemas.URLResponse(
+                shortened_url=check.shortened_url,
+                original_url=check.original_url
+            )
+            cache[short_url] = response_model.dict()
+            return JSONResponse(content=response_model.dict())
+        else:
+            raise HTTPException(status_code=404, detail="Link is not valid")
+
+    except HTTPException as e:
+        logger.error(f"HTTP Exception: {e}")
+        raise
+    except Exception as e:
+        logger.error(f"Error: {e}")
+        raise
+
+
+
 @starter.get("/analytics/{short_url}", response_model=schemas.VisitResponse)
 def get_analytics(short_url: str, request: Request, db: Session = Depends(get_db)):
     try:
-        print(f"Received URL: {short_url}")
+        logger.info(f"Received URL: {short_url}")
         url = db.query(URL).filter(URL.shortened_url == short_url).first()
 
         if url is None:
