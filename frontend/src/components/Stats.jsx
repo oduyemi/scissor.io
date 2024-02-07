@@ -26,14 +26,14 @@ export const Stats = () => {
 
                 console.error("Error:", responseData);
                 setAnalytics({});
-                setError(`Error: ${error.message || "Unknown error"}`);
+                setError(`Error: ${error.message}`);
 
             }
         } catch (error) {
 
             console.error("Error tracking URL:", error);
             setAnalytics({});
-            setError(`Error: ${error.message || "Unknown error"}`);
+            setError(`Error: ${error.message}`);
             
         } finally {
             setLoading(false);

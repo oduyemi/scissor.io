@@ -24,12 +24,12 @@ export const Url = () => {
             } else {
                 console.error("Error:", responseData);
                 setUrl({});
-                setError(`Error: ${error.message || "Unknown error"}`);
+                setError(`Error: ${error.message}`);
             }
         } catch (error) {
             console.error("Error fetching initial URL:", error);
             setUrl({});
-            setError(`Error: ${error.message || "Unknown error"}`);
+            setError(`Error: ${error.message}`);
         } finally {
             setLoading(false);
         }
