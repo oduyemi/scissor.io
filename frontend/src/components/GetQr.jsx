@@ -18,44 +18,36 @@ export const GetQr = () => {
         try {
             setLoading(true);
             const response = await axios.get(`https://s-yzww.onrender.com/get-qr/${shortUrl}`, {
-                
-            responseType: 'arraybuffer',
-
+                responseType: 'arraybuffer',
             });
-
-            const responseData = response.data;
-
+    
+            // Extract original URL from response headers
+            const originalUrl = response.headers['original-url'];
+    
             if (response.status === 200) {
-
-                console.log("Success:", responseData);
-                const blob = new Blob([responseData], { type: 'image/png' });
+                console.log("Success");
+                const blob = new Blob([response.data], { type: 'image/png' });
                 const imageUrl = URL.createObjectURL(blob);
-                setQr({ imageUrl: imageUrl, originalUrl: responseData.original_url });
+                setQr({ imageUrl: imageUrl, originalUrl: originalUrl });
                 setError(null);
-
             } else if (response.status === 404) {
-
                 setQr({});
                 console.log("Link not found. Please shorten your link first."); 
-                setError(`Error: "Link not found. Please shorten your link first.`);    
-
-            }else {
-
-                console.error("Error:", responseData);
+                setError(`Error: "Link not found. Please shorten your link first.`);
+            } else {
+                console.error("Error:", response);
                 setQr({});
-                setError(`Error: ${responseData.message}`);
+                setError(`Error: ${response.statusText}`);
             }
         } catch (error) {
-
-            console.error("Error fetching Qr Code:", error);
+            console.error("Error fetching QR Code:", error);
             setQr({});
             setError(`Error: ${error.message}`);
-
         } finally {
             setLoading(false);
         }
     };
-
+    
     const handleDownload = () => {
         const link = document.createElement('a');
         link.href = qr.imageUrl;
