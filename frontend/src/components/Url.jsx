@@ -13,7 +13,7 @@ export const Url = () => {
     const handleUrl = async () => {
         try {
             setLoading(true);
-            const response = await axios.get(`http://127.0.0.1:8000/original-url/${shortUrl}`);
+            const response = await axios.get(`https://s-yzww.onrender.com/original-url/${shortUrl}`);
             const responseData = response.data;
 
             if (response.status === 200) {

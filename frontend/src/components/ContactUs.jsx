@@ -28,11 +28,11 @@ export const ContactUs = () => {
         e.preventDefault();
       
         try {
-          const response = await axios.post("http://localhost:8000/send-message", formData);
+          const response = await axios.post("https://s-yzww.onrender.com/send-message", formData);
       
           console.log("Message sent successfully:", response.data);
       
-          await axios.post("http://localhost:8000/send-message", {
+          await axios.post("https://s-yzww.onrender.com/send-message", {
             to: formData.email,
             subject: "Your Message Received",
             body: "Your message has been received. We will get back to you shortly."

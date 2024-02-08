@@ -18,7 +18,7 @@ export const Shorten = () => {
             setLoading(true);
     
             const response = await axios.post(
-                "http://127.0.0.1:8000/shorten-url",
+                "https://s-yzww.onrender.com/shorten-url",
                 {
                     original_url: url,
                 },
@@ -160,7 +160,7 @@ export const Shorten = () => {
                                             >
                                                 Shortened URL: &emsp;
                                                 <span>
-                                                    <Link to={`http://localhost:8000/${shortenedUrl}`} target="_blank">
+                                                    <Link to={`https://s-yzww.onrender.com/${shortenedUrl}`} target="_blank">
                                                         <Typography variant="h6" sx={{ fontWeight: 'light', color: "#ffffff" }} paragraph className="inline text-white"> 
                                                         {shortenedUrl} 
                                                         </Typography>

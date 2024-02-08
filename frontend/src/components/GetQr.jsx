@@ -17,7 +17,7 @@ export const GetQr = () => {
     const handleQr = async () => {
         try {
             setLoading(true);
-            const response = await axios.get(`http://127.0.0.1:8000/get-qr/${shortUrl}`, {
+            const response = await axios.get(`https://s-yzww.onrender.com/get-qr/${shortUrl}`, {
                 
             responseType: 'arraybuffer',
 

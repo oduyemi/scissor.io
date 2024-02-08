@@ -13,7 +13,7 @@ export const Stats = () => {
     const handleTracker = async () => {
         try {
             setLoading(true);
-            const response = await axios.get(`http://127.0.0.1:8000/analytics/${shortUrl}`);
+            const response = await axios.get(`https://s-yzww.onrender.com/analytics/${shortUrl}`);
             const responseData = response.data;
 
             if (response.status === 200) {
@@ -136,7 +136,7 @@ export const Stats = () => {
                                                     </span><br /> <br />
                                                     Shortened URL: &emsp;
                                                     <span>
-                                                    <Link to={`http://localhost:8000/${analytics.short_url}`} target="_blank">
+                                                    <Link to={`https://s-yzww.onrender.com/${analytics.short_url}`} target="_blank">
                                                         <Typography variant="h6" sx={{ fontWeight: 'light'}} paragraph className="inline text-white">
                                                             {analytics.short_url}
                                                         </Typography>
