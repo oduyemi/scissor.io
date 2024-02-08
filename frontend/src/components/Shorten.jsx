@@ -33,18 +33,21 @@ export const Shorten = () => {
             if (response.status === 200) {
                 console.log("Success:", responseData);
                 setShortenedUrl(responseData.shortened_url);
-                setQrCodeImage({ imageUrl: `data:image/png;base64,${responseData.qr_code_image}` }); 
+                setQrCodeImage({ 
+                    imageUrl: `data:image/png;base64,${responseData.qr_code_image}`,
+                    originalUrl: responseData.original_url
+                });
                 setError(null);
             } else {
                 console.error("Error:", response);
                 setShortenedUrl("");
-                setQrCodeImage({ imageUrl: "" }); 
+                setQrCodeImage({ imageUrl: "", originalUrl: "" });
                 setError(`Error: ${responseData.message}`);
             }
         } catch (error) {
             console.error("Error shortening URL:", error);
             setShortenedUrl("");
-            setQrCodeImage({ imageUrl: "" });
+            setQrCodeImage({ imageUrl: "", originalUrl: "" });
             setError(`Error: ${error.message}`);
         } finally {
             setLoading(false);

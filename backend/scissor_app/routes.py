@@ -211,9 +211,10 @@ def get_qr_code(short_url: str, request: Request, db: Session = Depends(get_db))
             raise HTTPException(status_code=404, detail="Link is not valid")
 
         # Image
-        qr_code_path = link.qr_code_path
+        qr_code_path = FileResponse(link.qr_code_path)
 
-        return FileResponse(qr_code_path)
+        # return FileResponse(qr_code_path)
+        return QRResponse(qr_code_path=link.qr_code_path, original_url=link.original_url)
 
     except Exception as e:
         print(f"Error: {e}")

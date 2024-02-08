@@ -49,6 +49,7 @@ class QRRequest(BaseModel):
 
 class QRResponse(BaseModel):
     qr_code_path: str
+    original_url: str
 
 
 class VisitDetail(BaseModel):

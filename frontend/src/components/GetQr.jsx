@@ -30,7 +30,7 @@ export const GetQr = () => {
                 console.log("Success:", responseData);
                 const blob = new Blob([responseData], { type: 'image/png' });
                 const imageUrl = URL.createObjectURL(blob);
-                setQr({ imageUrl });
+                setQr({ imageUrl: imageUrl, originalUrl: responseData.original_url });
                 setError(null);
 
             } else if (response.status === 404) {
